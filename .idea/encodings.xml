@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/src/controller/AccompanyingPersonController.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/controller/ApplicationController.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/controller/AppointmentController.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/controller/UserController.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/gui/AccompanyingServicePanel.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/gui/AppointmentPanel.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/gui/LoginPanel.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/gui/MainFrame.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/gui/ManageAccompanyingPersonPanel.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/gui/RegisterPanel.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/model/AccompanyingPerson.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/model/Application.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/model/User.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/repository/AccompanyingPersonRepository.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/repository/ApplicationRepository.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/repository/AppointmentRepository.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/repository/UserRepository.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/service/AccompanyingPersonService.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/service/ApplicationService.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/service/AppointmentService.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/service/UserService.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/utils/DBUtil.java" charset="UTF-8" />
+  </component>
+</project>
