@@ -1,9 +1,12 @@
 package repository;
 
 import model.AccompanyingPerson;
+import utils.DBUtil;
 
-import java.sql.*;
-import utils.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 
 public class AccompanyingPersonRepository {

@@ -1,7 +1,7 @@
 package service;
 
-import model.*;
-import repository.*;
+import model.Application;
+import repository.ApplicationRepository;
 
 import java.sql.ResultSet;
 public class ApplicationService {

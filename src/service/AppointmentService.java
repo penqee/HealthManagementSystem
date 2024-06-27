@@ -1,7 +1,7 @@
 package service;
 
-import model.*;
-import repository.*;
+import model.Appointment;
+import repository.AppointmentRepository;
 
 import java.sql.ResultSet;
 

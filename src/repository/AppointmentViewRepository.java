@@ -1,16 +1,20 @@
 package repository;
 
-import model.*;
+import model.AccompanyingPerson;
+import model.User;
+import utils.DBUtil;
 
-import java.sql.*;
-import utils.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 
 public class AppointmentViewRepository {
-    public ResultSet select(User user, AccompanyingPerson ap, String appointment_no, String appointment_state) { //¸ù¾ÝÓÃ»§ÖÐµÄÐÅÏ¢ ºÍ ÅãÕïÊ¦ÀàÐÍ ºÍÐÅÏ¢×´Ì¬ ²éÑ¯ÉêÇëÐÅÏ¢
+    public ResultSet select(User user, AccompanyingPerson ap, String appointment_no, String appointment_state) { //ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½Ðµï¿½ï¿½ï¿½Ï¢ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ê¦ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï¢×´Ì¬ ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
         StringBuilder sql = new StringBuilder("SELECT * FROM applicationView WHERE 1=1");
 
-        // ¸ù¾ÝÓÃ»§ÐÅÏ¢¹¹½¨²éÑ¯Ìõ¼þ
+        // ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½
         if (user.getUser_no() != null && !user.getUser_no().isEmpty()) {
             sql.append(" AND user_no = ?");
         }
@@ -21,7 +25,7 @@ public class AppointmentViewRepository {
             sql.append(" AND user_phone_number = ?");
         }
 
-        // ¸ù¾ÝÅãÕïÊ¦ÐÅÏ¢¹¹½¨²éÑ¯Ìõ¼þ
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¦ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½
         if (ap.getAp_no() != null && !ap.getAp_no().isEmpty()) {
             sql.append(" AND ap_no = ?");
         }
@@ -35,11 +39,11 @@ public class AppointmentViewRepository {
             sql.append(" AND ap_type = ?");
         }
 
-        // Ô¤Ô¼ÐÅÏ¢±àºÅ
+        // Ô¤Ô¼ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½
         if (appointment_no != null && !appointment_no.isEmpty()) {
             sql.append(" AND application_no = ?");
         }
-        // Ô¤Ô¼ÐÅÏ¢×´Ì¬
+        // Ô¤Ô¼ï¿½ï¿½Ï¢×´Ì¬
         if (appointment_state != null && !appointment_state.isEmpty()) {
             sql.append(" AND application_state = ?");
         }
@@ -47,7 +51,7 @@ public class AppointmentViewRepository {
         try (Connection conn = DBUtil.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
             int index = 1;
 
-            // ÉèÖÃÓÃ»§²éÑ¯²ÎÊý
+            // ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½
             if (user.getUser_no() != null && !user.getUser_no().isEmpty()) {
                 stmt.setString(index++, user.getUser_no());
             }
@@ -58,7 +62,7 @@ public class AppointmentViewRepository {
                 stmt.setString(index++, user.getUser_phone_number());
             }
 
-            // ÉèÖÃÅãÕïÊ¦²éÑ¯²ÎÊý
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¦ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½
             if (ap.getAp_no() != null && !ap.getAp_no().isEmpty()) {
                 stmt.setString(index++, ap.getAp_no());
             }
@@ -71,11 +75,11 @@ public class AppointmentViewRepository {
             if (ap.getAp_type() != null && !ap.getAp_type().isEmpty()) {
                 stmt.setString(index++, ap.getAp_type());
             }
-            // ÉèÖÃÔ¤Ô¼ÐÅÏ¢±àºÅ²éÑ¯²ÎÊý
+            // ï¿½ï¿½ï¿½ï¿½Ô¤Ô¼ï¿½ï¿½Ï¢ï¿½ï¿½Å²ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½
             if (appointment_no != null && !appointment_no.isEmpty()) {
                 stmt.setString(index++, appointment_no);
             }
-            // ÉèÖÃÔ¤Ô¼×´Ì¬²éÑ¯²ÎÊý
+            // ï¿½ï¿½ï¿½ï¿½Ô¤Ô¼×´Ì¬ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½
             if (appointment_state != null && !appointment_state.isEmpty()) {
                 stmt.setString(index++, appointment_state);
             }

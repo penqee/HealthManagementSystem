@@ -2,7 +2,8 @@ package controller;
 
 import model.*;
 import service.*;
-import java.sql.*;
+
+import java.sql.ResultSet;
 
 public class AdminController {
     UserService userService;
@@ -21,75 +22,75 @@ public class AdminController {
         this.appointmentViewService = new AppointmentViewService();
     }
 
-    //ÓÃ»§Ä£¿é ¶ÔÓÃ»§±íÔöÉ¾¸Ä²é
-        //½«ĞÅÏ¢Ôö¼Óµ½ÓÃ»§±íÖĞ
+    //ï¿½Ã»ï¿½Ä£ï¿½ï¿½ ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½É¾ï¿½Ä²ï¿½
+        //ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½Óµï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½
     public boolean insertUser(String user_no, String user_password, String user_name, String User_phone_number) {
         return false;
     }
-        //½«Ïà¹ØµÄĞÅÏ¢´ÓÓÃ»§±íÖĞÉ¾³ı
+        //ï¿½ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½É¾ï¿½ï¿½
     public boolean deleteUser(String user_no, String user_password, String user_name, String User_phone_number) {
         return false;
     }
-        //¸üĞÂÓÃ»§Ïà¹ØĞÅÏ¢Í¨¹ıNo
+        //ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢Í¨ï¿½ï¿½No
     public boolean updateUserByNo(String user_no, String user_password, String user_name, String User_phone_number) {
         return false;
     }
-        //²éÑ¯ÓÃ»§±íĞÅÏ¢
+        //ï¿½ï¿½Ñ¯ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
     public ResultSet selectUser(String user_no, String user_password, String user_name, String User_phone_number) {
         return null;
     }
 
-    //ÅãÕïÊ¦Ä£¿é ¶ÔÅãÕïÊ¦±íÔöÉ¾¸Ä²é
-        //½«ĞÅÏ¢Ôö¼Óµ½ÅãÕïÊ¦±íÖĞ
+    //ï¿½ï¿½ï¿½ï¿½Ê¦Ä£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¦ï¿½ï¿½ï¿½ï¿½É¾ï¿½Ä²ï¿½
+        //ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½ï¿½ï¿½Ê¦ï¿½ï¿½ï¿½ï¿½
     public  boolean insertAP(String ap_no, String ap_password, String ap_name, String ap_phone_number, String ap_type, String ap_state) {
         return false;
     }
-        //½«ĞÅÏ¢´ÓÅãÕïÊ¦ÖĞÉ¾³ı
+        //ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¦ï¿½ï¿½É¾ï¿½ï¿½
     public  boolean deleteAp(String ap_no, String ap_password, String ap_name, String ap_phone_number, String ap_type, String ap_state) {
         return false;
     }
-        //¸üĞÂÅãÕïÊ¦Ïà¹ØĞÅÏ¢ Í¨¹ıNo
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¦ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ Í¨ï¿½ï¿½No
     public  boolean updateAPByNo(String ap_no, String ap_password, String ap_name, String ap_phone_number, String ap_type, String ap_state) {
 
         return false;
     }
-        //²éÑ¯ÅãÕïÊ¦ĞÅÏ¢
+        //ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½Ê¦ï¿½ï¿½Ï¢
     public  ResultSet selectAp(String ap_no, String ap_password, String ap_name, String ap_phone_number, String ap_type, String ap_state) {
         return null;
     }
 
-    //Ô¤Ô¼¹ØÏµÄ£¿é ¶ÔÔ¤Ô¼¹ØÏµÔöÉ¾¸Ä²é ²éÑ¯Ê±Ê¹ÓÃÊÓÍ¼²éÑ¯
-        //Ôö¼ÓĞÅÏ¢µ½Ô¤Ô¼¹ØÏµ±íÖĞ
+    //Ô¤Ô¼ï¿½ï¿½ÏµÄ£ï¿½ï¿½ ï¿½ï¿½Ô¤Ô¼ï¿½ï¿½Ïµï¿½ï¿½É¾ï¿½Ä²ï¿½ ï¿½ï¿½Ñ¯Ê±Ê¹ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½Ñ¯
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½Ô¤Ô¼ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½
     public boolean insertAppointment(String appointment_no, String user_no, String ap_no, String appointment_state) {
         return false;
     }
-        //½«ĞÅÏ¢´ÓÔ¤Ô¼¹ØÏµ±íÖĞÉ¾³ı
+        //ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½Ô¤Ô¼ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½É¾ï¿½ï¿½
     public boolean deleteAppointment(String appointment_no, String user_no, String ap_no, String appointment_state) {
         return false;
     }
-        //¸üĞÂÔ¤Ô¼ĞÅÏ¢ Í¨¹ıNo
+        //ï¿½ï¿½ï¿½ï¿½Ô¤Ô¼ï¿½ï¿½Ï¢ Í¨ï¿½ï¿½No
     public boolean updateAppointmentByNo(String appointment_no, String user_no, String ap_no, String appointment_state) {
         return false;
     }
-        //²éÑ¯Ô¤Ô¼ĞÅÏ¢ ´ÓÊÓÍ¼ÖĞ²éÑ¯
+        //ï¿½ï¿½Ñ¯Ô¤Ô¼ï¿½ï¿½Ï¢ ï¿½ï¿½ï¿½ï¿½Í¼ï¿½Ğ²ï¿½Ñ¯
     public ResultSet selectAppointmentView(String user_no, String user_name, String user_phone_number, String ap_no, String ap_name, String ap_phone_number, String ap_type, String ap_state,String appointment_no, String appointment_state) {
         return null;
     }
 
-    //ÉêÇë¹ØÏµÄ£¿é ¶ÔÉêÇë¹ØÏµÔöÉ¾¸Ä²é ²éÑ¯Ê±Ê¹ÓÃÊÓÍ¼²éÑ¯
-        //Ôö¼ÓÉêÇëĞÅÏ¢
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ÏµÄ£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½É¾ï¿½Ä²ï¿½ ï¿½ï¿½Ñ¯Ê±Ê¹ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½Ñ¯
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
     public boolean insertApplication(String application_no, String user_no, String ap_type, String application_state) {
         return false;
     }
-        //É¾³ıÉêÇëĞÅÏ¢
+        //É¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
     public boolean deleteApplication(String application_no, String user_no, String ap_type, String application_state) {
         return false;
     }
-        //¸üĞÂÉêÇëĞÅÏ¢ Í¨¹ıNo
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ Í¨ï¿½ï¿½No
     public boolean updateApplicationByNo(String application_no, String user_no, String ap_type, String application_state) {
         return false;
     }
-        //²éÑ¯ÉêÇëĞÅÏ¢ ´ÓÊÓÍ¼ÖĞ²éÑ¯
+        //ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ ï¿½ï¿½ï¿½ï¿½Í¼ï¿½Ğ²ï¿½Ñ¯
     public ResultSet selectApplicationView(String user_no, String user_name, String user_phone_number, String ap_type, String application_no, String application_state) {
         return null;
     }

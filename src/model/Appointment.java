@@ -1,7 +1,5 @@
 package model;
 
-import java.util.Date;
-
 public class Appointment { //预约信息 实现预约信息相关功能 预约信息增删改查
     private String appointment_no; //预约信息编号
     private String user_no; //用户编号

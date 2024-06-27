@@ -1,15 +1,18 @@
 package repository;
 
-import model.*;
+import model.User;
+import utils.DBUtil;
 
-import java.sql.*;
-import utils.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-public class ApplicationViewRepository { //ÉêÇëĞÅÏ¢ÊÓÍ¼
-    public ResultSet select(User user,String ap_type, String application_no, String application_state) { //¸ù¾İÓÃ»§ÖĞµÄĞÅÏ¢ ºÍ ÅãÕïÊ¦ÀàĞÍ ºÍĞÅÏ¢×´Ì¬ ²éÑ¯ÉêÇëĞÅÏ¢
+public class ApplicationViewRepository { //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½Í¼
+    public ResultSet select(User user,String ap_type, String application_no, String application_state) { //ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½Ğµï¿½ï¿½ï¿½Ï¢ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ê¦ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï¢×´Ì¬ ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
         StringBuilder sql = new StringBuilder("SELECT * FROM applicationView WHERE 1=1");
 
-        // ¸ù¾İÓÃ»§ĞÅÏ¢¹¹½¨²éÑ¯Ìõ¼ş
+        // ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½
         if (user.getUser_no() != null && !user.getUser_no().isEmpty()) {
             sql.append(" AND user_no = ?");
         }
@@ -36,7 +39,7 @@ public class ApplicationViewRepository { //ÉêÇëĞÅÏ¢ÊÓÍ¼
         try (Connection conn = DBUtil.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
             int index = 1;
 
-            // ÉèÖÃÓÃ»§²éÑ¯²ÎÊı
+            // ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½
             if (user.getUser_no() != null && !user.getUser_no().isEmpty()) {
                 stmt.setString(index++, user.getUser_no());
             }
@@ -47,17 +50,17 @@ public class ApplicationViewRepository { //ÉêÇëĞÅÏ¢ÊÓÍ¼
                 stmt.setString(index++, user.getUser_phone_number());
             }
 
-            // ÉèÖÃÅãÕïÊ¦ÀàĞÍ²éÑ¯²ÎÊı
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¦ï¿½ï¿½ï¿½Í²ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½
             if (ap_type != null && !ap_type.isEmpty()) {
                 stmt.setString(index++, ap_type);
             }
 
-            // ÉèÖÃÉêÇëĞÅÏ¢±àºÅ²éÑ¯²ÎÊı
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½Å²ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½
             if (application_no != null && !application_no.isEmpty()) {
                 stmt.setString(index++, application_no);
             }
 
-            // ÉèÖÃ×´Ì¬²éÑ¯²ÎÊı
+            // ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½
             if (application_state != null && !application_state.isEmpty()) {
                 stmt.setString(index++, application_state);
             }

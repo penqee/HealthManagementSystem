@@ -1,9 +1,9 @@
 package service;
 
-import model.*;
-import repository.*;
+import model.User;
+import repository.ApplicationViewRepository;
 
-import java.sql.*;
+import java.sql.ResultSet;
 
 public class ApplicationViewService {
     private ApplicationViewRepository applicationViewRepository;
@@ -11,8 +11,8 @@ public class ApplicationViewService {
         this.applicationViewRepository = new ApplicationViewRepository();
     }
 
-    //²éÑ¯ÉêÇëÐÅÏ¢ÊÓÍ¼
-    public ResultSet select(User user, String ap_type, String application_state) {
-        return applicationViewRepository.select(user,ap_type,application_state);
+    //ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½Í¼
+    public ResultSet select(User user, String ap_type,String application_no, String application_state) {
+        return applicationViewRepository.select(user,ap_type,application_no,application_state);
     }
 }

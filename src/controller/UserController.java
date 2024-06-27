@@ -2,7 +2,9 @@ package controller;
 
 import model.*;
 import service.*;
-import java.sql.*;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 public class UserController { //用户模块需要的功能
     UserService userService;
     ApplicationService applicationService;
@@ -55,7 +57,7 @@ public class UserController { //用户模块需要的功能
 
     }
     public ResultSet selectSelfAppointmentView(User user) { //从预约信息视图中 查询跟user自己有关的预约记录
-        return appointmentViewService.select(user,null,null);
+        return appointmentViewService.select(user,null,null,null);
     }
 
     public boolean updateAppointmentState(User user,AccompanyingPerson ap) { //只能将与user有关的预约记录状态从 进行中->结束
@@ -70,7 +72,7 @@ public class UserController { //用户模块需要的功能
     }
 
     public ResultSet selectSelfApplicationView(User user) { //从申请信息视图 查询跟user自己有关的申请记录状态
-        return applicationViewService.select(user,null,null);
+        return applicationViewService.select(user,null,null,null);
     }
 
 }

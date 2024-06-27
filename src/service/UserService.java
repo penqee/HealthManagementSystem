@@ -1,7 +1,7 @@
 package service;
 
-import model.*;
-import repository.*;
+import model.User;
+import repository.UserRepository;
 
 import java.sql.ResultSet;
 

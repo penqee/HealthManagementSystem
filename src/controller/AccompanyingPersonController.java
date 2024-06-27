@@ -2,7 +2,8 @@ package controller;
 
 import model.*;
 import service.*;
-import java.sql.*;
+
+import java.sql.ResultSet;
 
 public class AccompanyingPersonController {
     UserService userService;
@@ -38,7 +39,7 @@ public class AccompanyingPersonController {
 
     //查询与自己有关的预约记录
     public ResultSet selectSelfAppointment(AccompanyingPerson ap) {
-        return appointmentViewService.select(null,ap,null);
+        return appointmentViewService.select(null,ap,null,null);
     }
 
 }

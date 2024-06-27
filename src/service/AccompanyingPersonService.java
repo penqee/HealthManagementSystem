@@ -1,7 +1,7 @@
 package service;
 
-import model.*;
-import repository.*;
+import model.AccompanyingPerson;
+import repository.AccompanyingPersonRepository;
 
 import java.sql.ResultSet;
 public class AccompanyingPersonService {
