@@ -5,12 +5,18 @@
     <file url="file://$PROJECT_DIR$/src/controller/ApplicationController.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/controller/AppointmentController.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/controller/UserController.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/gui/APLogin.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/gui/APPanel.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/gui/AccompanyingServicePanel.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/gui/AdminLogin.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/gui/AdminPanel.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/gui/AppointmentPanel.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/gui/LoginPanel.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/gui/MainFrame.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/gui/ManageAccompanyingPersonPanel.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/gui/RegisterPanel.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/gui/SelectPanel.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/gui/UserPanel.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/model/AccompanyingPerson.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/model/Application.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/model/User.java" charset="UTF-8" />

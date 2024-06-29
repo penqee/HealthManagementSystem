@@ -12,7 +12,13 @@ public class MainFrame extends JFrame {
         mainPanel = new JPanel(cardLayout);
 
         // 添加各个面板
+        mainPanel.add(new SelectPanel(this),"SelectPanel");
         mainPanel.add(new UserLogin(this),"UserLogin");
+        mainPanel.add(new AdminLogin(this),"AdminLogin");
+        mainPanel.add(new APLogin(this),"APLogin");
+        mainPanel.add(new UserPanel(this),"UserPanel");
+        mainPanel.add(new APPanel(this),"APPanel");
+        mainPanel.add(new AdminPanel(this),"AdminPanel");
 
         add(mainPanel);
         setTitle("健康管理系统");
