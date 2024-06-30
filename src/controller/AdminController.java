@@ -31,13 +31,13 @@ public class AdminController {
 
 
     //登录相关
-    public boolean checkAdmin(String user_name, String user_password) throws SQLException { //检查登录
+    public boolean checkAdmin(String admin_no, String admin_password) throws SQLException { //检查登录
 
-        if (user_name==null || user_password==null) {
+        if (admin_no==null || admin_password==null) {
             return false;
         }
 
-        Admin admin = new Admin(user_name, user_password);
+        Admin admin = new Admin(admin_no, admin_password);
         ResultSet rs = adminService.select(admin);
         if (rs.next()){
             return true;
@@ -46,49 +46,55 @@ public class AdminController {
     }
 
     //新增用户
-    public boolean insertUser(String user_no, String user_password, String user_name, String User_phone_number) {
-       if(user_no==null||user_name==null||user_password==null||User_phone_number==null){
-           return false;
+    public boolean insertUser(String user_password, String user_name, String user_phone_number) {
+       if(user_password != null && user_password.length() <= 15 &&
+               user_name != null && user_name.length() <= 15 &&
+               user_phone_number != null && user_phone_number.length() == 11) {
+           User user = new User(SnowFlakeUtil.getSnowFlakeId().toString(), user_password, user_name, user_phone_number);
+           return userService.insert(user);
        }
-       User user = new User(user_no, user_password, user_name, User_phone_number);
-       return userService.insert(user);
+        return false;
     }
 
     //更新用户
-    public boolean updateUserByNo(String user_no, String user_password, String user_name, String User_phone_number) {
+    public boolean updateUserByNo(String user_no, String user_password, String user_name, String user_phone_number) {
         if(user_no==null){
             return false;
         }
-        User user = new User(user_no, user_password, user_name, User_phone_number);
+        User user = new User(user_no, user_password, user_name, user_phone_number);
         return userService.updateByNo(user);
     }
 
     //删除用户
-    public boolean deleteUser(String user_no, String user_password, String user_name, String User_phone_number) {
+    public boolean deleteUser(String user_no, String user_password, String user_name, String user_phone_number) {
         if(user_no==null) {
             return false;
         }
-        User user = new User(user_no, user_password, user_name, User_phone_number);
+        User user = new User(user_no, user_password, user_name, user_phone_number);
         return userService.delete(user);
     }
 
     //查询用户
-    public ResultSet selectUser(String user_no, String user_password, String user_name, String User_phone_number) {
+    public ResultSet selectUser(String user_no, String user_password, String user_name, String user_phone_number) {
 
-        User user = new User(user_no, user_password, user_name, User_phone_number);
+        User user = new User(user_no, user_password, user_name, user_phone_number);
         return userService.select(user);
     }
 
-    //新增护理师
-    public  boolean insertAP(String ap_no, String ap_password, String ap_name, String ap_phone_number, String ap_type, String ap_state) {
-        if(ap_no==null||ap_password==null||ap_name==null||ap_phone_number==null||ap_type==null||ap_state==null){
-            return false;
+    //新增陪诊师
+    public  boolean insertAP(String ap_password, String ap_name, String ap_phone_number, String ap_type, String ap_state) {
+        if(ap_password != null && ap_password.length() <= 15 &&
+                ap_name != null && ap_name.length() <= 15 &&
+                ap_phone_number!= null && ap_phone_number.length() == 11 &&
+                ap_type !=null && ap_state!=null){
+
+            AccompanyingPerson accompanyingPerson = new AccompanyingPerson(SnowFlakeUtil.getSnowFlakeId().toString(),ap_password,ap_name,ap_phone_number,ap_type,ap_state);
+            return accompanyingPersonService.insert(accompanyingPerson);
         }
-        AccompanyingPerson accompanyingPerson = new AccompanyingPerson(ap_no,ap_password,ap_name,ap_phone_number,ap_type,ap_state);
-        return accompanyingPersonService.insert(accompanyingPerson);
+        return false;
     }
 
-    //更新护理师
+    //更新陪诊师
     public  boolean updateAPByNo(String ap_no, String ap_password, String ap_name, String ap_phone_number, String ap_type, String ap_state) {
         if (ap_no==null){
             return false;
@@ -97,7 +103,7 @@ public class AdminController {
         return accompanyingPersonService.updateByNo(accompanyingPerson);
     }
 
-    //删除护理师
+    //删除陪诊师
     public  boolean deleteAp(String ap_no, String ap_password, String ap_name, String ap_phone_number, String ap_type, String ap_state) {
         if(ap_no==null) {
             return false;
@@ -106,7 +112,7 @@ public class AdminController {
         return accompanyingPersonService.delete(accompanyingPerson);
     }
 
-    //查询护理师
+    //查询陪诊师
     public  ResultSet selectAp(String ap_no, String ap_password, String ap_name, String ap_phone_number, String ap_type, String ap_state) {
         AccompanyingPerson accompanyingPerson = new AccompanyingPerson(ap_no, ap_password, ap_name, ap_phone_number, ap_type, ap_state);
         return accompanyingPersonService.select(accompanyingPerson);
@@ -135,22 +141,23 @@ public class AdminController {
         if(appointment_no==null) {
             return false;
         }
-        Appointment appointment = new Appointment(appointment_no,user_no,ap_no,"已完成");
+        Appointment appointment = new Appointment(appointment_no,user_no,ap_no,appointment_state);
         return appointmentService.updateByNo(appointment);
     }
 
     //查询预约信息
-    public ResultSet selectAppointmentView(String appointment_no, String user_no, String ap_no, String appointment_state) {
-       Appointment appointment = new Appointment(appointment_no,user_no,ap_no,appointment_state);
-       return appointmentService.select(appointment);
+    public ResultSet selectAppointmentView(String appointment_no, String user_no,String user_name,String user_phone, String ap_no,String ap_name,String ap_phone,String ap_type, String appointment_state) {
+        User user = new User(user_no,null,user_name,user_phone);
+        AccompanyingPerson ap = new AccompanyingPerson(ap_no,null,ap_name,ap_phone,ap_type,null);
+        return appointmentViewService.select(user,ap,appointment_no,appointment_state);
     }
 
     //新增兼职信息
-    public boolean insertApplication(String application_no, String user_no, String ap_type) {
-        if(application_no ==null || user_no==null || ap_type==null) {
+    public boolean insertApplication( String user_no, String ap_type) {
+        if(user_no==null || ap_type==null) {
             return false;
         }
-        Application application = new Application(application_no,user_no,ap_type,"待审核");
+        Application application = new Application(SnowFlakeUtil.getSnowFlakeId().toString(), user_no,ap_type,"待审核");
         return applicationService.insert(application);
     }
 
@@ -168,7 +175,10 @@ public class AdminController {
         if(application_no==null){
             return false;
         }
-        Application application = new Application(application_no,user_no,ap_type, "同意");
+
+        ResultSet rs = applicationService.select(new Application(application_no,null,null,null));
+        Application application = applicationService.ConvertToApplication(rs);
+        application.setApplication_State("同意");
         return applicationService.updateByNo(application);
     }
 
@@ -177,13 +187,31 @@ public class AdminController {
         if(application_no==null){
             return false;
         }
-        Application application = new Application(application_no,user_no,ap_type, "拒绝");
+
+        ResultSet rs = applicationService.select(new Application(application_no,null,null,null));
+        Application application = applicationService.ConvertToApplication(rs);
+        application.setApplication_State("拒绝");
         return applicationService.updateByNo(application);
     }
 
+    //更新兼职信息
+    public boolean updateApplicationByNo(String application_no, String ap_type, String application_state) {
+        if(application_no==null){
+            return false;
+        }
+
+        ResultSet rs = applicationService.select(new Application(application_no,null,null,null));
+        Application application = applicationService.ConvertToApplication(rs);
+
+        application.setAp_type(ap_type);
+        application.setApplication_State(application_state);
+        return applicationService.updateByNo(application);
+    }
+
+
     //查询兼职信息
-    public ResultSet selectApplicationView(String application_no, String user_no, String ap_type, String application_state) {
-       Application application =new Application(application_no,user_no,ap_type,application_state);
-       return applicationService.select(application);
+    public ResultSet selectApplicationView(String application_no, String user_no,String user_name,String user_phone,String ap_type, String application_state) {
+       User user = new User(user_no,null,user_name,user_phone);
+       return applicationViewService.select(user,ap_type,application_no,application_state);
     }
 }

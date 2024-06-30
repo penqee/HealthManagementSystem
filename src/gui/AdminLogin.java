@@ -1,14 +1,20 @@
 package gui;
 
+import controller.AdminController;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
 public class AdminLogin extends JPanel {
     private MainFrame mainFrame;
+    AdminController adminController;
     public AdminLogin(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
+        adminController = new AdminController();
+
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10); // 设置组件之间的间距
@@ -109,12 +115,23 @@ public class AdminLogin extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // 在这里添加登录逻辑
-                String username = userText.getText();
-                String password = new String(passwordText.getPassword());
-                System.out.println("账号: " + username);
-                System.out.println("密码: " + password);
-                //添加控制
-                mainFrame.showPanel("AdminPanel");
+                String admin_no = userText.getText();
+                String admin_password = new String(passwordText.getPassword());
+
+                try {
+                    if (adminController.checkAdmin(admin_no,admin_password) ) {
+                        JOptionPane.showMessageDialog(mainFrame, "登录成功");
+                        mainFrame.showPanel("AdminPanel");
+                    } else {
+                        JOptionPane.showMessageDialog(mainFrame, "账号或密码错误，请重新输入");
+                    }
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+
+                System.out.println("账号: " + admin_no );
+                System.out.println("密码: " + admin_password);
+
             }
         });
 

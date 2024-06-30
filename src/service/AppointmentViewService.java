@@ -11,7 +11,7 @@ public class AppointmentViewService {
     public AppointmentViewService() {
         this.appointmentViewRepository = new AppointmentViewRepository();
     }
-    public ResultSet select(User user, AccompanyingPerson ap, String appointment_on,String appointment_state) {
-        return appointmentViewRepository.select(user, ap, appointment_on, appointment_state);
+    public ResultSet select(User user, AccompanyingPerson ap, String appointment_no,String appointment_state) {
+        return appointmentViewRepository.select(user, ap, appointment_no, appointment_state);
     }
 }

@@ -1,17 +1,26 @@
 package gui;
 
+import controller.UserController;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class UserPanel extends JPanel {
     private MainFrame mainFrame;
+    private UserController userController;
     private JComboBox<String> typeComboBox;
 
 
     public UserPanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
+        userController = new UserController();
+
         setLayout(new BorderLayout());
 
         JTabbedPane tabbedPane = new JTabbedPane();
@@ -100,7 +109,11 @@ public class UserPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String selectedType = (String) typeComboBox.getSelectedItem();
-                //loadAccompanyingPersons(selectedType);
+                try {
+                    loadAccompanyingPersons(selectedType,tableModel);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
@@ -110,8 +123,9 @@ public class UserPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = table.getSelectedRow();
                 if (selectedRow >= 0) {
-                    String apNo = (String) tableModel.getValueAt(selectedRow, 0);
-                    bookAccompanyingPerson(apNo);
+                    String apNo = tableModel.getValueAt(selectedRow, 0).toString();
+                    userController.appointment(apNo);
+                    JOptionPane.showMessageDialog(mainFrame, "已预约陪诊师编号: " + apNo);
                 } else {
                     JOptionPane.showMessageDialog(mainFrame, "请先选择一个陪诊师");
                 }
@@ -121,33 +135,17 @@ public class UserPanel extends JPanel {
         return panel;
     }
 
-    /*
-        private void loadAccompanyingPersons(String type) {
-            try (Connection conn = DBUtil.getConnection()) {
-                String sql = "SELECT * FROM accompanyingPerson WHERE ap_type = ?";
-                try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                    stmt.setString(1, type);
-                    try (ResultSet rs = stmt.executeQuery()) {
-                        tableModel.setRowCount(0); // 清空表格数据
-                        while (rs.next()) {
-                            String apNo = rs.getString("ap_no");
-                            String apName = rs.getString("ap_name");
-                            String apPhoneNumber = rs.getString("ap_phone_number");
-                            String apType = rs.getString("ap_type");
-                            String apState = rs.getString("ap_state");
-                            tableModel.addRow(new Object[]{apNo, apName, apPhoneNumber, apType, apState});
-                        }
-                    }
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+    private void loadAccompanyingPersons(String type, DefaultTableModel tableModel) throws SQLException {
+        ResultSet rs = userController.selectFreeAccompanyingPerson(type);
+        tableModel.setRowCount(0); // 清空表格数据
+        while (rs.next()) {
+            String apNo = rs.getString("ap_no");
+            String apName = rs.getString("ap_name");
+            String apPhoneNumber = rs.getString("ap_phone_number");
+            String apType = rs.getString("ap_type");
+            String apState = rs.getString("ap_state");
+            tableModel.addRow(new Object[]{apNo, apName, apPhoneNumber, apType, apState});
         }
-
-     */
-    private void bookAccompanyingPerson(String apNo) {
-        // 这里添加预约逻辑，例如将预约信息插入到数据库
-        JOptionPane.showMessageDialog(mainFrame, "已预约陪诊师编号: " + apNo);
     }
 
 
@@ -169,7 +167,7 @@ public class UserPanel extends JPanel {
         centerPanel.add(typeLabel, centerGbc);
 
         // 添加选择框
-        typeComboBox = new JComboBox<>(new String[]{"陪同就医", "提前挂号", "代办问诊", "代取结果", "代办跑腿", "病案到家", "所有"});
+        typeComboBox = new JComboBox<>(new String[]{"陪同就医", "提前挂号", "代办问诊", "代取结果", "代办跑腿", "病案到家"});
         centerGbc.gridx = 1;
         centerGbc.gridy = 0;
         centerPanel.add(typeComboBox, centerGbc);
@@ -219,7 +217,16 @@ public class UserPanel extends JPanel {
         applyButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                String selectedType = (String) typeComboBox.getSelectedItem();
+                try {
+                    if (userController.application(selectedType)) {
+                        JOptionPane.showMessageDialog(mainFrame, "申请成功，申请类型：" + selectedType);
+                    } else {
+                        JOptionPane.showMessageDialog(mainFrame, "申请失败，请勿重复申请");
+                    }
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
@@ -227,41 +234,33 @@ public class UserPanel extends JPanel {
         checkStatusButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //loadApplicationStatus();
-                String selectedType = (String) typeComboBox.getSelectedItem();
-                applyForAccompanyingPerson(selectedType);
+                try {
+                    loadApplicationStatus(tableModel);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
         return panel;
     }
 
-    private void applyForAccompanyingPerson(String type) {
-        // 这里添加申请逻辑，例如将申请信息插入到数据库
-        JOptionPane.showMessageDialog(mainFrame, "已申请陪诊服务类型: " + type);
-    }
-/*
-    private void loadApplicationStatus() {
-        try (Connection conn = DBUtil.getConnection()) {
-            String sql = "SELECT * FROM application WHERE user_no = ?"; // 假设用当前用户编号查询
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setString(1, currentUser.getUser_no()); // 假设 currentUser 是当前登录的用户对象
-                try (ResultSet rs = stmt.executeQuery()) {
-                    tableModel.setRowCount(0); // 清空表格数据
-                    while (rs.next()) {
-                        String applicationNo = rs.getString("application_no");
-                        String userNo = rs.getString("user_no");
-                        String apType = rs.getString("ap_type");
-                        String applicationState = rs.getString("application_state");
-                        tableModel.addRow(new Object[]{applicationNo, userNo, apType, applicationState});
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
 
- */
+    private void loadApplicationStatus(DefaultTableModel tableModel) throws SQLException {
+        ResultSet rs = userController.selectSelfApplicationView();
+        tableModel.setRowCount(0); // 清空表格数据
+        while (rs.next()) {
+            String application_no = rs.getString("application_no");
+            String user_no = rs.getString("user_no");
+            String user_name = rs.getString("user_name");
+            String user_phone= rs.getString("user_phone_number");
+            String ap_type = rs.getString("ap_type");
+            String application_state = rs.getString("application_state");
+            tableModel.addRow(new Object[]{application_no, user_no, user_name, user_phone, ap_type, application_state});
+        }
+    }
+
+
 
     private JPanel createAppointmentViewPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
@@ -281,7 +280,7 @@ public class UserPanel extends JPanel {
         centerPanel.add(typeLabel, centerGbc);
 
         // 添加选择框
-        JComboBox<String> typeComboBox = new JComboBox<>(new String[]{"陪同就医", "提前挂号", "代办问诊", "代取结果", "代办跑腿", "病案到家"});
+        JComboBox<String> typeComboBox = new JComboBox<>(new String[]{"陪同就医", "提前挂号", "代办问诊", "代取结果", "代办跑腿", "病案到家", "所有"});
         centerGbc.gridx = 1;
         centerGbc.gridy = 0;
         centerPanel.add(typeComboBox, centerGbc);
@@ -345,7 +344,12 @@ public class UserPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String selectedType = (String) typeComboBox.getSelectedItem();
-                //loadAppointments(selectedType, tableModel);
+                if ("所有".equals(selectedType)) selectedType = null;
+                try {
+                    loadAppointments(selectedType, tableModel);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
@@ -354,63 +358,46 @@ public class UserPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = table.getSelectedRow();
-                if (selectedRow >= 0) {
-                    String appointmentNo = (String) tableModel.getValueAt(selectedRow, 0);
-                    //updateAppointmentStatus(appointmentNo);
+                String appointType = tableModel.getValueAt(selectedRow, 8).toString();
+
+                if (selectedRow >= 0 && "正在进行".equals(appointType)) {
+                    String appointmentNo = tableModel.getValueAt(selectedRow, 0).toString();
+                    String apNo = tableModel.getValueAt(selectedRow, 4).toString();
+
+                    try {
+                        userController.updateAppointmentState(appointmentNo,apNo);
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
                 } else {
-                    JOptionPane.showMessageDialog(mainFrame, "请先选择一个预约记录");
+                    JOptionPane.showMessageDialog(mainFrame, "只能选择一个“工作中”的记录");
                 }
             }
         });
 
         return panel;
     }
-/*
-    private void loadAppointments(String type, DefaultTableModel tableModel) {
-        try (Connection conn = DBUtil.getConnection()) {
-            String sql = "SELECT * FROM appointment_view WHERE ap_type = ?";
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setString(1, type);
-                try (ResultSet rs = stmt.executeQuery()) {
-                    tableModel.setRowCount(0); // 清空表格数据
-                    while (rs.next()) {
-                        String appointmentNo = rs.getString("appointment_no");
-                        String userNo = rs.getString("user_no");
-                        String userName = rs.getString("user_name");
-                        String userPhoneNumber = rs.getString("user_phone_number");
-                        String apNo = rs.getString("ap_no");
-                        String apName = rs.getString("ap_name");
-                        String apPhoneNumber = rs.getString("ap_phone_number");
-                        String apType = rs.getString("ap_type");
-                        String appointmentState = rs.getString("appointment_state");
-                        tableModel.addRow(new Object[]{appointmentNo, userNo, userName, userPhoneNumber, apNo, apName, apPhoneNumber, apType, appointmentState});
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+
+    private void loadAppointments(String type, DefaultTableModel tableModel) throws SQLException {
+        ResultSet rs = userController.selectSelfAppointmentView(type);
+        tableModel.setRowCount(0); // 清空表格数据
+        while (rs.next()) {
+            String appointment_no = rs.getString("appointment_no");
+            String user_no = rs.getString("user_no");
+            String user_name = rs.getString("user_name");
+            String user_phone = rs.getString("user_phone_number");
+            String ap_no = rs.getString("ap_no");
+            String ap_name = rs.getString("ap_name");
+            String ap_phone = rs.getString("ap_phone_number");
+            String ap_type = rs.getString("ap_type");
+            String appointment_state = rs.getString("appointment_state");
+            tableModel.addRow(new Object[]{appointment_no, user_no, user_name, user_phone, ap_no, ap_name, ap_phone, ap_type, appointment_state});
         }
     }
 
-    private void updateAppointmentStatus(String appointmentNo) {
-        // 这里添加更新逻辑，例如将预约信息状态更新到数据库
-        try (Connection conn = DBUtil.getConnection()) {
-            String sql = "UPDATE appointment SET appointment_state = '已处理' WHERE appointment_no = ?";
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setString(1, appointmentNo);
-                int rowsAffected = stmt.executeUpdate();
-                if (rowsAffected > 0) {
-                    JOptionPane.showMessageDialog(mainFrame, "预约状态已更新");
-                } else {
-                    JOptionPane.showMessageDialog(mainFrame, "更新失败，请重试");
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
- */
+
+
 }
 
 

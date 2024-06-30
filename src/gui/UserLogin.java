@@ -1,17 +1,20 @@
 package gui;
 
 import controller.UserController;
+import model.User;
 import service.UserService;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.SQLException;
 
 public class UserLogin extends JPanel {
     private MainFrame mainFrame;
-
+    private UserController userController;
     public UserLogin(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
+        userController = new UserController();
 
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -116,13 +119,24 @@ public class UserLogin extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // 在这里添加登录逻辑
-                String username = userText.getText();
-                String password = new String(passwordText.getPassword());
-                //添加控制
-                mainFrame.showPanel("UserPanel");
-                System.out.println("账号: " + username);
-                System.out.println("密码: " + password);
-                // 例如： mainFrame.showCard("Panel2");
+                String user_no = userText.getText();
+                String user_password = new String(passwordText.getPassword());
+
+                try {
+                    if (userController.checkUser(user_no,user_password)) {
+                        JOptionPane.showMessageDialog(mainFrame, "登录成功");
+                        //添加控制
+                        mainFrame.showPanel("UserPanel");
+                    } else {
+                        JOptionPane.showMessageDialog(mainFrame, "账号或密码错误，请重新输入");
+                    }
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+
+                System.out.println("账号: " + user_no);
+                System.out.println("密码: " + user_password);
+
             }
         });
 
@@ -187,14 +201,23 @@ public class UserLogin extends JPanel {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         // 在这里添加注册逻辑
-                        String password = new String(passwordField.getPassword());
-                        String name = nameField.getText();
-                        String phone = phoneField.getText();
+                        String user_password = new String(passwordField.getPassword());
+                        String user_name = nameField.getText();
+                        String user_phone = phoneField.getText();
+
+                        if (userController.checkMessage(user_password,user_name,user_password)) {
+                            User user = userController.registerUser(user_password,user_name,user_phone);
+                            JOptionPane.showMessageDialog(registerFrame, "注册成功成功\n" +
+                                    "账号:" + user.getUser_no() + "\n" +
+                                    "密码:" + user.getUser_Password() + "\n" +
+                                    "姓名:" + user.getUser_name() + "\n" +
+                                    "手机号:" + user.getUser_phone_number() + "\n");
+                        }
 
                         // 示例打印注册信息，可以替换为实际的注册逻辑
-                        System.out.println("密码: " + password);
-                        System.out.println("姓名: " + name);
-                        System.out.println("手机号: " + phone);
+                        System.out.println("密码: " + user_password);
+                        System.out.println("姓名: " + user_name);
+                        System.out.println("手机号: " + user_phone);
 
                         registerFrame.dispose();
                     }

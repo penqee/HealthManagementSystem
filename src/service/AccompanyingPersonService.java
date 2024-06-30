@@ -1,9 +1,12 @@
 package service;
 
 import model.AccompanyingPerson;
+import model.User;
 import repository.AccompanyingPersonRepository;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class AccompanyingPersonService {
     private AccompanyingPersonRepository accompanyingPersonRepository;
 
@@ -27,19 +30,24 @@ public class AccompanyingPersonService {
         return accompanyingPersonRepository.select(ap);
     }
 
-    // 检查陪诊师是否空闲
-    public boolean isStateFree(String ap_no) {
-        AccompanyingPerson ap = new AccompanyingPerson(null,null,null,null,null,null);
-        ap.setAp_no(ap_no);
-        ResultSet rs = accompanyingPersonRepository.select(ap);
+
+    public AccompanyingPerson ConvertToAP(ResultSet rs){
         try {
-            if (rs != null && rs.next()) {
-                String state = rs.getString("ap_state");
-                return "空闲".equals(state);
+            if (rs.next()){
+                String uid = rs.getString("ap_no");
+                String password = rs.getString("ap_password");
+                String ap_name = rs.getString("ap_name");
+                String ap_phone_number = rs.getString("ap_phone_number");
+                String ap_type = rs.getString("ap_type");
+                String ap_state = rs.getString("ap_state");
+
+                return new AccompanyingPerson(uid, password, ap_name, ap_phone_number, ap_type, ap_state);
             }
-        } catch (Exception e) {
+
+        }catch (SQLException e){
             e.printStackTrace();
         }
-        return false;
+
+        return null;
     }
 }

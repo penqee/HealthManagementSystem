@@ -1,16 +1,21 @@
 package gui;
 
+import controller.AdminController;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class AdminPanel extends JPanel {
     private MainFrame mainFrame;
+    private AdminController adminController;
 
     public AdminPanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
+        adminController = new AdminController();
+
         setLayout(new BorderLayout());
 
         JTabbedPane tabbedPane = new JTabbedPane();
@@ -108,7 +113,7 @@ public class AdminPanel extends JPanel {
 
         // 事件处理
         // 查询按钮事件处理
-        searchButton.addActionListener(new ActionListener() {
+        searchButton.addActionListener(new ActionListener() { //查询用户
             @Override
             public void actionPerformed(ActionEvent e) {
                 // 模拟查询用户信息并显示在表格中，这里可以根据实际情况从数据库获取数据
@@ -116,12 +121,15 @@ public class AdminPanel extends JPanel {
                 String userPassword = userPasswordField.getText();
                 String userName = userNameField.getText();
                 String userPhone = userPhoneField.getText();
-                // 添加模拟数据
-                tableModel.addRow(new Object[]{userNo, userPassword, userName, userPhone});
+                try {
+                    loadUsers(userNo,userPassword,userName,userPhone,tableModel);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
-        addButton.addActionListener(new ActionListener() {
+        addButton.addActionListener(new ActionListener() { //添加用户
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFrame addFrame = new JFrame("增加用户信息");
@@ -192,114 +200,155 @@ public class AdminPanel extends JPanel {
                 saveButton.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        String userNo = newUserNoField.getText();
+
                         String userPassword = newUserPasswordField.getText();
                         String userName = newUserNameField.getText();
                         String userPhone = newUserPhoneField.getText();
-                        tableModel.addRow(new Object[]{userNo, userPassword, userName, userPhone});
+
+                        if (adminController.insertUser(userPassword,userName,userPhone)) {
+                            JOptionPane.showMessageDialog(addFrame,"添加成功");
+                        } else {
+                            JOptionPane.showMessageDialog(addFrame,"添加失败");
+                        }
+
+                        //更新表格
+                        try {
+                            loadUsers(null,null,null,null,tableModel);
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
+
                         addFrame.dispose();
                     }
                 });
             }
         });
 
-        updateButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //int selectedRow = table.getSelectedRow();
-                //if (selectedRow >= 0) {
-                JFrame updateFrame = new JFrame("修改用户信息");
-                updateFrame.setSize(300, 200);
-                updateFrame.setLocationRelativeTo(null);
-
-                JPanel updatePanel = new JPanel(new GridBagLayout());
-                GridBagConstraints updateGbc = new GridBagConstraints();
-                updateGbc.insets = new Insets(5, 5, 5, 5);
-                updateGbc.fill = GridBagConstraints.HORIZONTAL;
-
-                updateGbc.gridx = 0;
-                updateGbc.gridy = 0;
-                updateGbc.anchor = GridBagConstraints.EAST;
-                updatePanel.add(new JLabel("用户编号"), updateGbc);
-                updateGbc.gridx = 1;
-                updateGbc.gridy = 0;
-                updateGbc.weightx = 1.0;
-                updateGbc.anchor = GridBagConstraints.WEST;
-                //JTextField updateUserNoField = new JTextField(table.getValueAt(selectedRow, 0).toString());
-                JTextField updateUserNoField = new JTextField(15);
-                updateUserNoField.setEditable(false);
-                updatePanel.add(updateUserNoField, updateGbc);
-
-                updateGbc.gridx = 0;
-                updateGbc.gridy = 1;
-                updateGbc.anchor = GridBagConstraints.EAST;
-                updatePanel.add(new JLabel("用户密码"), updateGbc);
-                updateGbc.gridx = 1;
-                updateGbc.gridy = 1;
-                updateGbc.weightx = 1.0;
-                updateGbc.anchor = GridBagConstraints.WEST;
-                //JTextField updateUserPasswordField = new JTextField(table.getValueAt(selectedRow, 1).toString());
-                JTextField updateUserPasswordField = new JTextField(15);
-                updatePanel.add(updateUserPasswordField, updateGbc);
-
-                updateGbc.gridx = 0;
-                updateGbc.gridy = 2;
-                updateGbc.anchor = GridBagConstraints.EAST;
-                updatePanel.add(new JLabel("用户姓名"), updateGbc);
-                updateGbc.gridx = 1;
-                updateGbc.gridy = 2;
-                updateGbc.weightx = 1.0;
-                updateGbc.anchor = GridBagConstraints.WEST;
-                //JTextField updateUserNameField = new JTextField(table.getValueAt(selectedRow, 2).toString());
-                JTextField updateUserNameField = new JTextField(15);
-                updatePanel.add(updateUserNameField, updateGbc);
-
-                updateGbc.gridx = 0;
-                updateGbc.gridy = 3;
-                updateGbc.anchor = GridBagConstraints.EAST;
-                updatePanel.add(new JLabel("用户手机号"), updateGbc);
-                updateGbc.gridx = 1;
-                updateGbc.gridy = 3;
-                updateGbc.weightx = 1.0;
-                updateGbc.anchor = GridBagConstraints.WEST;
-                //JTextField updateUserPhoneField = new JTextField(table.getValueAt(selectedRow, 3).toString());
-                JTextField updateUserPhoneField = new JTextField(15);
-                updatePanel.add(updateUserPhoneField, updateGbc);
-
-                // 添加用于保存按钮的面板
-                updateGbc.gridx = 0;
-                updateGbc.gridy = 4;
-                updateGbc.gridwidth = 2;
-                updateGbc.anchor = GridBagConstraints.CENTER; // 居中保存按钮
-                updateGbc.fill = GridBagConstraints.NONE; // 防止按钮延伸
-                JButton saveUpdateButton = new JButton("保存");
-                updatePanel.add(saveUpdateButton, updateGbc);
-
-                updateFrame.add(updatePanel);
-                updateFrame.setVisible(true);
-
-                saveUpdateButton.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        /*
-                        table.setValueAt(updateUserPasswordField.getText(), selectedRow, 1);
-                        table.setValueAt(updateUserNameField.getText(), selectedRow, 2);
-                        table.setValueAt(updateUserPhoneField.getText(), selectedRow, 3);
-
-                        updateFrame.dispose();
-                         */
-                    }
-                });
-                //}
-            }
-        });
-
-        deleteButton.addActionListener(new ActionListener() {
+        updateButton.addActionListener(new ActionListener() { //更新用户
             @Override
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = table.getSelectedRow();
                 if (selectedRow >= 0) {
-                    tableModel.removeRow(selectedRow);
+                    JFrame updateFrame = new JFrame("修改用户信息");
+                    updateFrame.setSize(300, 200);
+                    updateFrame.setLocationRelativeTo(null);
+
+                    JPanel updatePanel = new JPanel(new GridBagLayout());
+                    GridBagConstraints updateGbc = new GridBagConstraints();
+                    updateGbc.insets = new Insets(5, 5, 5, 5);
+                    updateGbc.fill = GridBagConstraints.HORIZONTAL;
+
+                    updateGbc.gridx = 0;
+                    updateGbc.gridy = 0;
+                    updateGbc.anchor = GridBagConstraints.EAST;
+                    updatePanel.add(new JLabel("用户编号"), updateGbc);
+                    updateGbc.gridx = 1;
+                    updateGbc.gridy = 0;
+                    updateGbc.weightx = 1.0;
+                    updateGbc.anchor = GridBagConstraints.WEST;
+                    JTextField updateUserNoField = new JTextField(table.getValueAt(selectedRow, 0).toString());
+                    updateUserNoField.setEditable(false);
+                    updatePanel.add(updateUserNoField, updateGbc);
+
+                    updateGbc.gridx = 0;
+                    updateGbc.gridy = 1;
+                    updateGbc.anchor = GridBagConstraints.EAST;
+                    updatePanel.add(new JLabel("用户密码"), updateGbc);
+                    updateGbc.gridx = 1;
+                    updateGbc.gridy = 1;
+                    updateGbc.weightx = 1.0;
+                    updateGbc.anchor = GridBagConstraints.WEST;
+                    JTextField updateUserPasswordField = new JTextField(table.getValueAt(selectedRow, 1).toString());
+                    updatePanel.add(updateUserPasswordField, updateGbc);
+
+                    updateGbc.gridx = 0;
+                    updateGbc.gridy = 2;
+                    updateGbc.anchor = GridBagConstraints.EAST;
+                    updatePanel.add(new JLabel("用户姓名"), updateGbc);
+                    updateGbc.gridx = 1;
+                    updateGbc.gridy = 2;
+                    updateGbc.weightx = 1.0;
+                    updateGbc.anchor = GridBagConstraints.WEST;
+                    JTextField updateUserNameField = new JTextField(table.getValueAt(selectedRow, 2).toString());
+
+                    updatePanel.add(updateUserNameField, updateGbc);
+
+                    updateGbc.gridx = 0;
+                    updateGbc.gridy = 3;
+                    updateGbc.anchor = GridBagConstraints.EAST;
+                    updatePanel.add(new JLabel("用户手机号"), updateGbc);
+                    updateGbc.gridx = 1;
+                    updateGbc.gridy = 3;
+                    updateGbc.weightx = 1.0;
+                    updateGbc.anchor = GridBagConstraints.WEST;
+                    JTextField updateUserPhoneField = new JTextField(table.getValueAt(selectedRow, 3).toString());
+
+                    updatePanel.add(updateUserPhoneField, updateGbc);
+
+                    // 添加用于保存按钮的面板
+                    updateGbc.gridx = 0;
+                    updateGbc.gridy = 4;
+                    updateGbc.gridwidth = 2;
+                    updateGbc.anchor = GridBagConstraints.CENTER; // 居中保存按钮
+                    updateGbc.fill = GridBagConstraints.NONE; // 防止按钮延伸
+                    JButton saveUpdateButton = new JButton("保存");
+                    updatePanel.add(saveUpdateButton, updateGbc);
+
+                    updateFrame.add(updatePanel);
+                    updateFrame.setVisible(true);
+
+                    saveUpdateButton.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            String userNo = updateUserNoField.getText();
+                            String userPassword = updateUserPasswordField.getText();
+                            String userName = updateUserNameField.getText();
+                            String userPhone = updateUserPhoneField.getText();
+                            if (adminController.updateUserByNo(userNo, userPassword,userName,userPhone)) {
+                                JOptionPane.showMessageDialog(updateFrame,"更新成功");
+                            } else {
+                                JOptionPane.showMessageDialog(updateFrame,"更新失败");
+                            }
+
+                            //更新表格
+                            try {
+                                loadUsers(null,null,null,null,tableModel);
+                            } catch (SQLException ex) {
+                                throw new RuntimeException(ex);
+                            }
+
+                            updateFrame.dispose();
+
+                        }
+                    });
+                }
+            }
+        });
+
+        deleteButton.addActionListener(new ActionListener() { //删除用户
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = table.getSelectedRow();
+                if (selectedRow >= 0) {
+                    String userNo =  tableModel.getValueAt(selectedRow,0).toString();
+                    /*
+                    String userPassword =  tableModel.getValueAt(selectedRow,1).toString();
+                    String userName =  tableModel.getValueAt(selectedRow,2).toString();
+                    String userPhone =  tableModel.getValueAt(selectedRow,3).toString();
+                    */
+                    if (adminController.deleteUser(userNo,null,null,null)) {
+                        JOptionPane.showMessageDialog(mainFrame,"删除成功");
+                    } else {
+                        JOptionPane.showMessageDialog(mainFrame,"删除失败");
+                    }
+
+                    //更新表格
+                    try {
+                        loadUsers(null,null,null,null,tableModel);
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+
                 }
             }
         });
@@ -310,6 +359,20 @@ public class AdminPanel extends JPanel {
 
         return panel;
     }
+
+    private void loadUsers(String userNo,String userPassword, String userName, String userPhone,DefaultTableModel tableModel) throws SQLException {
+        ResultSet rs = adminController.selectUser(userNo,userPassword,userName,userPhone);
+        tableModel.setRowCount(0); // 清空表格数据
+        while (rs.next()) {
+            String user_no = rs.getString("user_no");
+            String user_password = rs.getString("user_password");
+            String user_name = rs.getString("user_name");
+            String user_phone = rs.getString("user_phone_number");
+            tableModel.addRow(new Object[]{user_no, user_password, user_name, user_phone});
+        }
+    }
+
+
 
 
     private JPanel createAPManagementPanel() {
@@ -405,19 +468,25 @@ public class AdminPanel extends JPanel {
         buttonPanel.add(deleteButton);
 
         // 事件处理
-        searchButton.addActionListener(new ActionListener() {
+        searchButton.addActionListener(new ActionListener() { //查询
             @Override
             public void actionPerformed(ActionEvent e) {
-                /*
+
                 String apNo = apNoField.getText();
                 String apPassword = apPasswordField.getText();
                 String apName = apNameField.getText();
                 String apPhone = apPhoneField.getText();
-                String apServiceType = apServiceTypeField.getText();
-                String apStatus = apStatusField.getText();
-                tableModel.addRow(new Object[]{apNo, apPassword, apName, apPhone, apServiceType, apStatus});
+                String apType = apServiceTypeComboBox.getSelectedItem().toString();
+                if ("所有".equals(apType)) apType = null;
 
-                 */
+                String apStatus = apServiceTypeComboBox.getSelectedItem().toString();
+                if ("所有".equals(apStatus)) apStatus = null;
+
+                try {
+                    loadAPs(apNo,apPassword,apName,apPhone,apType,apStatus,tableModel);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
@@ -516,16 +585,28 @@ public class AdminPanel extends JPanel {
                 saveButton.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        /*
-                        String apNo = newApNoField.getText();
+
                         String apPassword = newApPasswordField.getText();
                         String apName = newApNameField.getText();
                         String apPhone = newApPhoneField.getText();
-                        String apServiceType = apServiceTypeComboBox.getSelectedItem().toString();
-                        String apStatus = newApStatusField.getText();
-                        tableModel.addRow(new Object[]{apNo, apPassword, apName, apPhone, apServiceType, apStatus});
+                        String apType = newAPServiceTypeComboBox.getSelectedItem().toString();
+                        String apState = newAPStatesComboBox.getSelectedItem().toString();
+
+                        if (adminController.insertAP(apPassword,apName,apPhone,apType,apState)) {
+                            JOptionPane.showMessageDialog(addFrame,"添加成功");
+                        } else {
+                            JOptionPane.showMessageDialog(addFrame,"添加失败");
+                        }
+
+                        //更新表格
+                        try {
+                            loadAPs(null,null,null,null,null,null,tableModel);
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
+
                         addFrame.dispose();
-                         */
+
                     }
                 });
             }
@@ -631,14 +712,28 @@ public class AdminPanel extends JPanel {
                     saveUpdateButton.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            /*
-                            table.setValueAt(updateApPasswordField.getText(), selectedRow, 1);
-                            table.setValueAt(updateApNameField.getText(), selectedRow, 2);
-                            table.setValueAt(updateApPhoneField.getText(), selectedRow, 3);
-                            table.setValueAt(updateApServiceTypeField.getText(), selectedRow, 4);
-                            table.setValueAt(updateApStatusField.getText(), selectedRow, 5);
+                            String apNo = updateApNoField.getText();
+                            String apPassword = updateApPasswordField.getText();
+                            String apName = updateApNameField.getText();
+                            String apPhone = updateApPhoneField.getText();
+                            String apType = updateAPServiceTypeComboBox.getSelectedItem().toString();
+                            String apState = updateAPStatesComboBox.getSelectedItem().toString();
+
+                            if (adminController.updateAPByNo(apNo,apPassword,apName,apPhone,apType,apState) ) {
+                                JOptionPane.showMessageDialog(updateFrame,"更新成功");
+                            } else {
+                                JOptionPane.showMessageDialog(updateFrame,"更新失败");
+                            }
+
+                            //更新表格
+                            try {
+                                loadAPs(null,null,null,null,null,null,tableModel);
+                            } catch (SQLException ex) {
+                                throw new RuntimeException(ex);
+                            }
+
                             updateFrame.dispose();
-                             */
+
                         }
                     });
                 }
@@ -650,7 +745,21 @@ public class AdminPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = table.getSelectedRow();
                 if (selectedRow >= 0) {
-                    tableModel.removeRow(selectedRow);
+                    String apNo = tableModel.getValueAt(selectedRow,0).toString();
+
+                    if (adminController.deleteAp(apNo,null,null,null,null,null) ) {
+                        JOptionPane.showMessageDialog(mainFrame,"删除成功");
+                    } else {
+                        JOptionPane.showMessageDialog(mainFrame,"删除失败");
+                    }
+
+                    //更新表格
+                    try {
+                        loadAPs(null,null,null,null,null,null,tableModel);
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+
                 }
             }
         });
@@ -661,6 +770,20 @@ public class AdminPanel extends JPanel {
 
         return panel;
     }
+    private void loadAPs(String apNo,String apPassword, String apName, String apPhone, String apType, String apState, DefaultTableModel tableModel) throws SQLException {
+        ResultSet rs = adminController.selectAp(apNo,apPassword,apName,apPhone,apType,apState);
+        tableModel.setRowCount(0); // 清空表格数据
+        while (rs.next()) {
+            String ap_no = rs.getString("ap_no");
+            String ap_password = rs.getString("ap_password");
+            String ap_name = rs.getString("ap_name");
+            String ap_phone = rs.getString("ap_phone_number");
+            String ap_type = rs.getString("ap_type");
+            String ap_State = rs.getString("ap_state");
+            tableModel.addRow(new Object[]{ap_no, ap_password, ap_name, ap_phone, ap_type, ap_State});
+        }
+    }
+
 
 
     private JPanel createAppointmentManagementPanel() {
@@ -763,8 +886,8 @@ public class AdminPanel extends JPanel {
         gbc.gridy = 4;
         gbc.anchor = GridBagConstraints.WEST;
         String[] statusTypes = {"正在进行", "已结束", "所有"};
-        JComboBox<String> apptStatusComboBox = new JComboBox<>(statusTypes);
-        inputPanel.add(apptStatusComboBox, gbc);
+        JComboBox<String> apptStatesComboBox = new JComboBox<>(statusTypes);
+        inputPanel.add(apptStatesComboBox, gbc);
 
         // 表格
         String[] columnNames = {
@@ -798,11 +921,18 @@ public class AdminPanel extends JPanel {
                 String apNo = apNoField.getText();
                 String apName = apNameField.getText();
                 String apPhone = apPhoneField.getText();
-                String apServiceType = (String) apServiceTypeComboBox.getSelectedItem();
-                String apptStatus = (String) apptStatusComboBox.getSelectedItem();
-                tableModel.addRow(new Object[]{
-                        apptNo, userNo, userName, userPhone, apNo, apName, apPhone, apServiceType, apptStatus
-                });
+                String apType = apServiceTypeComboBox.getSelectedItem().toString();
+                if ("所有".equals(apType)) apType = null;
+
+                String apptStates = apptStatesComboBox.getSelectedItem().toString();
+                if ("所有".equals(apptStates)) apptStates = null;
+
+                try {
+                    loadAppointments(apptNo,userNo,userName,userPhone,apNo,apName,apPhone,apType,apptStates,tableModel);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+
             }
         });
 
@@ -817,7 +947,7 @@ public class AdminPanel extends JPanel {
                 GridBagConstraints addGbc = new GridBagConstraints();
                 addGbc.insets = new Insets(5, 5, 5, 5);
                 addGbc.fill = GridBagConstraints.HORIZONTAL;
-
+/*
                 addGbc.gridx = 0;
                 addGbc.gridy = 0;
                 addGbc.anchor = GridBagConstraints.EAST;
@@ -828,7 +958,7 @@ public class AdminPanel extends JPanel {
                 addGbc.anchor = GridBagConstraints.WEST;
                 JTextField newApptNoField = new JTextField(15);
                 addPanel.add(newApptNoField, addGbc);
-
+*/
                 addGbc.gridx = 0;
                 addGbc.gridy = 1;
                 addGbc.anchor = GridBagConstraints.EAST;
@@ -840,6 +970,7 @@ public class AdminPanel extends JPanel {
                 JTextField newUserNoField = new JTextField(15);
                 addPanel.add(newUserNoField, addGbc);
 
+
                 addGbc.gridx = 0;
                 addGbc.gridy = 2;
                 addGbc.anchor = GridBagConstraints.EAST;
@@ -850,7 +981,7 @@ public class AdminPanel extends JPanel {
                 addGbc.anchor = GridBagConstraints.WEST;
                 JTextField newApNoField = new JTextField(15);
                 addPanel.add(newApNoField, addGbc);
-
+/*
                 addGbc.gridx = 0;
                 addGbc.gridy = 3;
                 addGbc.anchor = GridBagConstraints.EAST;
@@ -860,9 +991,11 @@ public class AdminPanel extends JPanel {
                 addGbc.weightx = 1.0;
                 addGbc.anchor = GridBagConstraints.WEST;
                 String[] statusType = {"正在进行", "已结束"};
-                JComboBox<String> newApptStatusComboBox = new JComboBox<>(statusType);
-                addPanel.add(newApptStatusComboBox, addGbc);
+                JComboBox<String> newApptStatesComboBox = new JComboBox<>(statusType);
+                addPanel.add(newApptStatesComboBox, addGbc);
 
+
+ */
                 // 添加用于保存按钮的面板
                 addGbc.gridx = 0;
                 addGbc.gridy = 4;
@@ -878,11 +1011,24 @@ public class AdminPanel extends JPanel {
                 saveButton.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        String apptNo = newApptNoField.getText();
+                        //String apptNo = newApptNoField.getText();
                         String userNo = newUserNoField.getText();
                         String apNo = newApNoField.getText();
-                        String apptStatus = (String) newApptStatusComboBox.getSelectedItem();
-                        tableModel.addRow(new Object[]{apptNo, userNo, "", "", apNo, "", "", "", apptStatus});
+                        //String apptStates = newApptStatesComboBox.getSelectedItem().toString();
+
+                        if (adminController.insertAppointment(userNo,apNo) ) {
+                            JOptionPane.showMessageDialog(addFrame,"添加成功");
+                        } else {
+                            JOptionPane.showMessageDialog(addFrame,"添加失败");
+                        }
+
+                        //更新表格
+                        try {
+                            loadAppointments(null,null,null,null,null,null,null,null,null,tableModel);
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
+
                         addFrame.dispose();
                     }
                 });
@@ -946,9 +1092,9 @@ public class AdminPanel extends JPanel {
                     updateGbc.weightx = 1.0;
                     updateGbc.anchor = GridBagConstraints.WEST;
                     String[] statusType = {"正在进行", "已结束"};
-                    JComboBox<String> updateApptStatusComboBox = new JComboBox<>(statusType);
-                    updateApptStatusComboBox.setSelectedItem(table.getValueAt(selectedRow, 8).toString());
-                    updatePanel.add(updateApptStatusComboBox, updateGbc);
+                    JComboBox<String> updateApptStatesComboBox = new JComboBox<>(statusType);
+                    updateApptStatesComboBox.setSelectedItem(table.getValueAt(selectedRow, 8).toString());
+                    updatePanel.add(updateApptStatesComboBox, updateGbc);
 
                     // 添加用于保存按钮的面板
                     updateGbc.gridx = 0;
@@ -965,9 +1111,25 @@ public class AdminPanel extends JPanel {
                     saveUpdateButton.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            table.setValueAt(updateUserNoField.getText(), selectedRow, 1);
-                            table.setValueAt(updateApNoField.getText(), selectedRow, 4);
-                            table.setValueAt(updateApptStatusComboBox.getSelectedItem().toString(), selectedRow, 8);
+                            String apptNo = updateApptNoField.getText();
+                            String userNo = updateUserNoField.getText();
+                            String apNo = updateApNoField.getText();
+                            String apptStates = updateApptStatesComboBox.getSelectedItem().toString();
+
+                            if (adminController.updateAppointmentByNo(apptNo,userNo,apptNo,apptStates)) {
+                                JOptionPane.showMessageDialog(updateFrame,"更新成功");
+                            } else {
+                                JOptionPane.showMessageDialog(updateFrame,"更新失败");
+                            }
+
+
+                            //更新表格
+                            try {
+                                loadAppointments(null,null,null,null,null,null,null,null,null,tableModel);
+                            } catch (SQLException ex) {
+                                throw new RuntimeException(ex);
+                            }
+
                             updateFrame.dispose();
                         }
                     });
@@ -980,7 +1142,21 @@ public class AdminPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = table.getSelectedRow();
                 if (selectedRow >= 0) {
-                    tableModel.removeRow(selectedRow);
+                    String apptNo = tableModel.getValueAt(selectedRow,0).toString();
+
+                    if (adminController.deleteAppointment(apptNo,null,null,null)) {
+                        JOptionPane.showMessageDialog(mainFrame,"删除成功");
+                    } else {
+                        JOptionPane.showMessageDialog(mainFrame,"删除失败");
+                    }
+
+                    //更新表格
+                    try {
+                        loadAppointments(null,null,null,null,null,null,null,null,null,tableModel);
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+
                 }
             }
         });
@@ -991,6 +1167,24 @@ public class AdminPanel extends JPanel {
 
         return panel;
     }
+
+    private void loadAppointments(String appointmentNo, String userNo,String userName,String userPhone, String apNo,String apName,String apPhone,String apType, String appointmentState, DefaultTableModel tableModel) throws SQLException {
+        ResultSet rs = adminController.selectAppointmentView(appointmentNo,userNo,userName,userPhone,appointmentNo,apName,apPhone,apType,appointmentState);
+        tableModel.setRowCount(0); // 清空表格数据
+        while (rs.next()) {
+            String appointment_no = rs.getString("appointment_no");
+            String user_no = rs.getString("user_no");
+            String user_name = rs.getString("user_name");
+            String user_phone = rs.getString("user_phone_number");
+            String ap_no = rs.getString("ap_no");
+            String ap_name = rs.getString("ap_name");
+            String ap_phone = rs.getString("ap_phone_number");
+            String ap_type = rs.getString("ap_type");
+            String appointment_state = rs.getString("appointment_state");
+            tableModel.addRow(new Object[]{appointment_no, user_no, user_name, user_phone, ap_no, ap_name, ap_phone, ap_type, appointment_state});
+        }
+    }
+
 
 
     private JPanel createApplicationManagementPanel() {
@@ -1063,8 +1257,8 @@ public class AdminPanel extends JPanel {
         gbc.gridy = 2;
         gbc.anchor = GridBagConstraints.WEST;
         String[] statusTypes = {"待审核", "同意", "拒绝", "所有"};
-        JComboBox<String> applicationStatusComboBox = new JComboBox<>(statusTypes);
-        inputPanel.add(applicationStatusComboBox, gbc);
+        JComboBox<String> applicationStatesComboBox = new JComboBox<>(statusTypes);
+        inputPanel.add(applicationStatesComboBox, gbc);
 
         // 表格
         String[] columnNames = {
@@ -1095,11 +1289,17 @@ public class AdminPanel extends JPanel {
                 String userNo = userNoField.getText();
                 String userName = userNameField.getText();
                 String userPhone = userPhoneField.getText();
-                String serviceType = (String) serviceTypeComboBox.getSelectedItem();
-                String applicationStatus = (String) applicationStatusComboBox.getSelectedItem();
-                tableModel.addRow(new Object[]{
-                        applicationNo, userNo, userName, userPhone, serviceType, applicationStatus
-                });
+                String serviceType =  serviceTypeComboBox.getSelectedItem().toString();
+                if ("所有".equals(serviceType)) serviceType = null;
+
+                String applicationStates =  applicationStatesComboBox.getSelectedItem().toString();
+                if ("所有".equals(applicationStates)) applicationStates = null;
+
+                try {
+                    loadApplications(applicationNo,userNo,userName,userPhone,serviceType,applicationStates,tableModel);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
@@ -1115,6 +1315,7 @@ public class AdminPanel extends JPanel {
                 addGbc.insets = new Insets(5, 5, 5, 5);
                 addGbc.fill = GridBagConstraints.HORIZONTAL;
 
+                /*
                 addGbc.gridx = 0;
                 addGbc.gridy = 0;
                 addGbc.anchor = GridBagConstraints.EAST;
@@ -1125,6 +1326,8 @@ public class AdminPanel extends JPanel {
                 addGbc.anchor = GridBagConstraints.WEST;
                 JTextField newApplicationNoField = new JTextField(15);
                 addPanel.add(newApplicationNoField, addGbc);
+                 */
+
 
                 addGbc.gridx = 0;
                 addGbc.gridy = 1;
@@ -1149,6 +1352,7 @@ public class AdminPanel extends JPanel {
                 JComboBox<String> newServiceTypeComboBox = new JComboBox<>(serviceType);
                 addPanel.add(newServiceTypeComboBox, addGbc);
 
+                /*
                 addGbc.gridx = 0;
                 addGbc.gridy = 3;
                 addGbc.anchor = GridBagConstraints.EAST;
@@ -1160,6 +1364,9 @@ public class AdminPanel extends JPanel {
                 String[] statusType = {"待审核", "同意", "拒绝"};
                 JComboBox<String> newApplicationStatusComboBox = new JComboBox<>(statusType);
                 addPanel.add(newApplicationStatusComboBox, addGbc);
+
+                 */
+
 
                 // 添加用于保存按钮的面板
                 addGbc.gridx = 0;
@@ -1176,11 +1383,24 @@ public class AdminPanel extends JPanel {
                 saveButton.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        String applicationNo = newApplicationNoField.getText();
+
                         String userNo = newUserNoField.getText();
-                        String serviceType = (String) newServiceTypeComboBox.getSelectedItem();
-                        String applicationStatus = (String) newApplicationStatusComboBox.getSelectedItem();
-                        tableModel.addRow(new Object[]{applicationNo, userNo, "", "", serviceType, applicationStatus});
+                        String serviceType = (String) newServiceTypeComboBox.getSelectedItem().toString();
+                        //String applicationStatus = (String) newApplicationStatusComboBox.getSelectedItem();
+
+                        if (adminController.insertApplication(userNo,serviceType) ) {
+                            JOptionPane.showMessageDialog(addFrame,"添加成功");
+                        } else {
+                            JOptionPane.showMessageDialog(addFrame,"添加失败");
+                        }
+
+                        //更新表格
+                        try {
+                            loadApplications(null,null,null,null,null,null,tableModel);
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
+
                         addFrame.dispose();
                     }
                 });
@@ -1246,9 +1466,9 @@ public class AdminPanel extends JPanel {
                     updateGbc.weightx = 1.0;
                     updateGbc.anchor = GridBagConstraints.WEST;
                     String[] statusType = {"待审核", "同意", "拒绝"};
-                    JComboBox<String> updateApplicationStatusComboBox = new JComboBox<>(statusType);
-                    updateApplicationStatusComboBox.setSelectedItem(table.getValueAt(selectedRow, 5).toString());
-                    updatePanel.add(updateApplicationStatusComboBox, updateGbc);
+                    JComboBox<String> updateApplicationStatesComboBox = new JComboBox<>(statusType);
+                    updateApplicationStatesComboBox.setSelectedItem(table.getValueAt(selectedRow, 5).toString());
+                    updatePanel.add(updateApplicationStatesComboBox, updateGbc);
 
                     // 添加用于保存按钮的面板
                     updateGbc.gridx = 0;
@@ -1265,9 +1485,24 @@ public class AdminPanel extends JPanel {
                     saveUpdateButton.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            table.setValueAt(updateUserNoField.getText(), selectedRow, 1);
-                            table.setValueAt(updateServiceTypeComboBox.getSelectedItem().toString(), selectedRow, 4);
-                            table.setValueAt(updateApplicationStatusComboBox.getSelectedItem().toString(), selectedRow, 5);
+                            String applicationNo = updateApplicationNoField.getText();
+                            //String userNo = updateUserNoField.getText();
+                            String apTyep = updateServiceTypeComboBox.getSelectedItem().toString();
+                            String applcationStates = updateApplicationStatesComboBox.getSelectedItem().toString();
+
+                            if (adminController.updateApplicationByNo(applicationNo,apTyep,applcationStates) ) {
+                                JOptionPane.showMessageDialog(updateFrame,"更新成功");
+                            } else {
+                                JOptionPane.showMessageDialog(updateFrame,"更新失败");
+                            }
+
+                            //更新表格
+                            try {
+                                loadApplications(null,null,null,null,null,null,tableModel);
+                            } catch (SQLException ex) {
+                                throw new RuntimeException(ex);
+                            }
+
                             updateFrame.dispose();
                         }
                     });
@@ -1280,7 +1515,21 @@ public class AdminPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = table.getSelectedRow();
                 if (selectedRow >= 0) {
-                    tableModel.removeRow(selectedRow);
+                    String applicationNo = tableModel.getValueAt(selectedRow,0).toString();
+
+                    if (adminController.deleteApplication(applicationNo,null,null,null) ) {
+                        JOptionPane.showMessageDialog(mainFrame,"删除成功");
+                    } else {
+                        JOptionPane.showMessageDialog(mainFrame,"删除失败");
+                    }
+
+                    //更新表格
+                    try {
+                        loadApplications(null,null,null,null,null,null,tableModel);
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+
                 }
             }
         });
@@ -1290,6 +1539,20 @@ public class AdminPanel extends JPanel {
         panel.add(buttonPanel, BorderLayout.SOUTH);
 
         return panel;
+    }
+
+    private void loadApplications(String applicationNo, String userNo,String userName,String userPhone,String apType, String applicationState, DefaultTableModel tableModel) throws SQLException {
+        ResultSet rs = adminController.selectApplicationView(applicationNo,userNo,userName,userPhone,apType,applicationState);
+        tableModel.setRowCount(0); // 清空表格数据
+        while (rs.next()) {
+            String application_no = rs.getString("application_no");
+            String user_no = rs.getString("user_no");
+            String user_name = rs.getString("user_name");
+            String user_phone= rs.getString("user_phone_number");
+            String ap_type = rs.getString("ap_type");
+            String application_state = rs.getString("application_state");
+            tableModel.addRow(new Object[]{application_no, user_no, user_name, user_phone, ap_type, application_state});
+        }
     }
 
 }

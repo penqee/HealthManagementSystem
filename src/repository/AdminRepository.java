@@ -15,19 +15,19 @@ public class AdminRepository {
         StringBuilder sql = new StringBuilder("SELECT * FROM user WHERE 1=1");
 
         // 根据用户信息构建查询条件
-        if (admin.getAdmin_name() != null && !admin.getAdmin_name().isEmpty()) {
-            sql.append(" AND user_no = ?");
+        if (admin.getAdmin_no() != null && !admin.getAdmin_no().isEmpty()) {
+            sql.append(" AND admin_no = ?");
         }
         if (admin.getAdmin_password() != null && !admin.getAdmin_password().isEmpty()) {
-            sql.append(" AND user_password = ?");
+            sql.append(" AND admin_password = ?");
         }
 
         try (Connection conn = DBUtil.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
             int index = 1;
 
             // 设置查询参数
-            if (admin.getAdmin_name() != null && !admin.getAdmin_name().isEmpty()) {
-                stmt.setString(index++, admin.getAdmin_name());
+            if (admin.getAdmin_no() != null && !admin.getAdmin_no().isEmpty()) {
+                stmt.setString(index++, admin.getAdmin_no());
             }
             if (admin.getAdmin_password() != null && !admin.getAdmin_password().isEmpty()) {
                 stmt.setString(index++, admin.getAdmin_password());

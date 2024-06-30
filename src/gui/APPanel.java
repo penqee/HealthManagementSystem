@@ -1,19 +1,23 @@
 package gui;
 
+import controller.AccompanyingPersonController;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class APPanel extends JPanel {
     private MainFrame mainFrame;
-
+    private AccompanyingPersonController apc;
     private JTable table;
     private DefaultTableModel tableModel;
 
     public APPanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
+        apc = new AccompanyingPersonController();
         initializePanel();
     }
 
@@ -76,7 +80,11 @@ public class APPanel extends JPanel {
         queryButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //loadAppointments();
+                try {
+                    loadAppointments();
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
@@ -84,57 +92,39 @@ public class APPanel extends JPanel {
         updateButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int selectedRow = table.getSelectedRow();
-                if (selectedRow >= 0) {
-                    String appointmentNo = (String) tableModel.getValueAt(selectedRow, 0);
-                    //updateAppointmentStatus(appointmentNo);
-                } else {
-                    JOptionPane.showMessageDialog(mainFrame, "请先选择一个预约记录");
+                try {
+                    if (apc.updateSelfState()) {
+                        JOptionPane.showMessageDialog(mainFrame, "更新成功，当前状态为:" + apc.getAP().getAp_state());
+                    } else {
+                        JOptionPane.showMessageDialog(mainFrame, "更新失败，请确保自己没有预约记录");
+                    }
+
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
                 }
             }
         });
     }
-/*
-    private void loadAppointments() {
-        try (Connection conn = DBUtil.getConnection()) {
-            String sql = "SELECT * FROM appointment_view";
-            try (PreparedStatement stmt = conn.prepareStatement(sql);
-                 ResultSet rs = stmt.executeQuery()) {
-                tableModel.setRowCount(0); // 清空表格数据
-                while (rs.next()) {
-                    String appointmentNo = rs.getString("appointment_no");
-                    String userNo = rs.getString("user_no");
-                    String userName = rs.getString("user_name");
-                    String userPhoneNumber = rs.getString("user_phone_number");
-                    String apNo = rs.getString("ap_no");
-                    String apName = rs.getString("ap_name");
-                    String apPhoneNumber = rs.getString("ap_phone_number");
-                    String apType = rs.getString("ap_type");
-                    String appointmentState = rs.getString("appointment_state");
-                    tableModel.addRow(new Object[]{appointmentNo, userNo, userName, userPhoneNumber, apNo, apName, apPhoneNumber, apType, appointmentState});
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+
+    private void loadAppointments() throws SQLException {
+        ResultSet rs = apc.selectSelfAppointment();
+        tableModel.setRowCount(0); // 清空表格数据
+        while (rs.next()) {
+            String appointment_no = rs.getString("appointment_no");
+            String user_no = rs.getString("user_no");
+            String user_name = rs.getString("user_name");
+            String user_phone = rs.getString("user_phone_number");
+            String ap_no = rs.getString("ap_no");
+            String ap_name = rs.getString("ap_name");
+            String ap_phone = rs.getString("ap_phone_number");
+            String ap_type = rs.getString("ap_type");
+            String appointment_state = rs.getString("appointment_state");
+            tableModel.addRow(new Object[]{appointment_no, user_no, user_name, user_phone, ap_no, ap_name, ap_phone, ap_type, appointment_state});
         }
     }
 
-    private void updateAppointmentStatus(String appointmentNo) {
-        try (Connection conn = DBUtil.getConnection()) {
-            String sql = "UPDATE appointment SET appointment_state = '已处理' WHERE appointment_no = ?";
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setString(1, appointmentNo);
-                int rowsAffected = stmt.executeUpdate();
-                if (rowsAffected > 0) {
-                    JOptionPane.showMessageDialog(mainFrame, "预约状态已更新");
-                } else {
-                    JOptionPane.showMessageDialog(mainFrame, "更新失败，请重试");
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
- */
 }
+
+
+

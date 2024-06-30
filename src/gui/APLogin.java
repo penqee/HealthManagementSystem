@@ -1,14 +1,21 @@
 package gui;
 
+import controller.AccompanyingPersonController;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
 public class APLogin extends JPanel {
     private MainFrame mainFrame;
+    private AccompanyingPersonController apc;
+
     public APLogin(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
+        apc = new AccompanyingPersonController();
+
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10); // 设置组件之间的间距
@@ -109,12 +116,24 @@ public class APLogin extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // 在这里添加登录逻辑
-                String username = userText.getText();
-                String password = new String(passwordText.getPassword());
-                System.out.println("账号: " + username);
-                System.out.println("密码: " + password);
-                //添加控制
-                mainFrame.showPanel("APPanel");
+                String ap_no = userText.getText();
+                String ap_password = new String(passwordText.getPassword());
+
+
+                try {
+                    if (apc.checkAP(ap_no,ap_password)) {
+                        JOptionPane.showMessageDialog(mainFrame, "登录成功");
+                        //添加控制
+                        mainFrame.showPanel("APPanel");
+                    } else {
+                        JOptionPane.showMessageDialog(mainFrame, "账号或密码错误，请重新输入");
+                    }
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+                System.out.println("账号: " + ap_no);
+                System.out.println("密码: " + ap_password);
+
             }
         });
 

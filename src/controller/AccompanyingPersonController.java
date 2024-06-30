@@ -2,7 +2,11 @@ package controller;
 
 import model.*;
 import service.*;
+import utils.ThreadLocalUtil;
+
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
 
 public class AccompanyingPersonController {
     UserService userService;
@@ -22,54 +26,64 @@ public class AccompanyingPersonController {
     }
 
     //登录相关
-    public boolean checkAP(String user_no, String user_password) { //检查登录
-        AccompanyingPerson ap = new AccompanyingPerson(user_no,user_password,null,null,null,null);
-        try {
-            ResultSet rs = accompanyingPersonService.select(ap);
-            if (rs != null && rs.next()) {
-                // 检查密码是否匹配
-                String storedPassword = rs.getString("ap_password");
-                return user_password.equals(storedPassword);
-            }
+    public boolean checkAP(String ap_no, String ap_password) throws SQLException { //检查登录
 
-        }catch (Exception e) {
-            e.printStackTrace();
+        if (ap_no==null || ap_password==null) {
+            return false;
         }
 
+        AccompanyingPerson check_ap = new AccompanyingPerson(ap_no, ap_password,null,null,null,null);
+        ResultSet rs = accompanyingPersonService.select(check_ap);
+        if (rs.next()){
+
+            HashMap<String,Object> map = new HashMap();
+            map.put("ap_no",rs.getString("ap_no"));
+            map.put("ap_name",rs.getString("ap_name"));
+
+            //保存登录陪诊师用户信息
+            ThreadLocalUtil.set(map);
+
+            return true;
+        }
         return false;
     }
 
-    public AccompanyingPerson getAP(String user_no, String user_password) { //获取登录的账号的AP信息
-        AccompanyingPerson ap = new AccompanyingPerson(user_no,user_password,null,null,null,null);
-        ap.setAp_no(user_no);
-        ap.setAp_password(user_password);
-        ResultSet rs = accompanyingPersonService.select(ap);
-
-        try {
-            if (rs != null && rs.next()) {
-                AccompanyingPerson accompanyingPerson = new AccompanyingPerson(null,null,null,null,null,null);
-                accompanyingPerson.setAp_no(rs.getString("ap_no"));
-                accompanyingPerson.setAp_password(rs.getString("ap_password"));
-                accompanyingPerson.setAp_name(rs.getString("ap_name"));
-                accompanyingPerson.setAp_phone_number(rs.getString("ap_phone_number"));
-                accompanyingPerson.setAp_type(rs.getString("ap_type"));
-                accompanyingPerson.setAp_state(rs.getString("ap_state"));
-                return accompanyingPerson;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return null;
+    public AccompanyingPerson getAP() { //获取登录的账号的AP信息
+        HashMap<String, Object> map = ThreadLocalUtil.get();
+        String ap_no = (String) map.get("ap_no");
+        String ap_password = (String) map.get("ap_password");
+        AccompanyingPerson ap_info = new AccompanyingPerson(ap_no,ap_password,null, null,null,null);
+        ResultSet rs = accompanyingPersonService.select(ap_info);
+        return accompanyingPersonService.ConvertToAP(rs);
     }
 
-    // 查看是否空闲
-    public boolean isStateFree(String ap_no) {
-        return accompanyingPersonService.isStateFree(ap_no);
+    // 更新自己的状态
+    public boolean updateSelfState() throws SQLException {
+        ResultSet rs = selectSelfAppointment();
+        if (rs.next()) {
+            return false;
+        } else {
+            HashMap<String, Object> map = ThreadLocalUtil.get();
+            String ap_no = (String) map.get("ap_no");
+            ResultSet r = accompanyingPersonService.select(new AccompanyingPerson(ap_no,null,null,null,null,null));
+
+            AccompanyingPerson ap = accompanyingPersonService.ConvertToAP(rs);
+            if ("忙碌".equals(ap.getAp_state())) {
+                ap.setAp_state("空闲");
+            } else if ("空闲".equals(ap.getAp_state())) {
+                ap.setAp_state("忙碌");
+            }
+            return accompanyingPersonService.updateByNo(ap);
+        }
     }
 
     //查询与自己有关的预约记录
-    public ResultSet selectSelfAppointment(AccompanyingPerson ap) {
+    public ResultSet selectSelfAppointment() {
+        HashMap<String, Object> map = ThreadLocalUtil.get();
+        String ap_no = (String) map.get("ap_no");
+        ResultSet rs = accompanyingPersonService.select(new AccompanyingPerson(ap_no,null,null,null,null,null));
+
+        AccompanyingPerson ap = accompanyingPersonService.ConvertToAP(rs);
         return appointmentViewService.select(null,ap,null,null);
     }
 
