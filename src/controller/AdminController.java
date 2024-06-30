@@ -8,6 +8,8 @@ import utils.ThreadLocalUtil;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AdminController {
 
@@ -38,8 +40,8 @@ public class AdminController {
         }
 
         Admin admin = new Admin(admin_no, admin_password);
-        ResultSet rs = adminService.select(admin);
-        if (rs.next()){
+        List<Admin> adminList = adminService.select(admin);
+        if (adminList != null && !adminList.isEmpty()){
             return true;
         }
         return false;
@@ -75,12 +77,15 @@ public class AdminController {
     }
 
     //查询用户
-    public ResultSet selectUser(String user_no, String user_password, String user_name, String user_phone_number) {
-
+    public List<User> selectUser(String user_no, String user_password, String user_name, String user_phone_number) {
         User user = new User(user_no, user_password, user_name, user_phone_number);
         return userService.select(user);
     }
 
+    public void userToAp(User user,String ap_type) {
+        AccompanyingPerson accompanyingPerson = new AccompanyingPerson(user.getUser_no(), user.getUser_Password(), user.getUser_name(),user.getUser_phone_number(), ap_type,"忙碌");
+        accompanyingPersonService.insert(accompanyingPerson);
+    }
     //新增陪诊师
     public  boolean insertAP(String ap_password, String ap_name, String ap_phone_number, String ap_type, String ap_state) {
         if(ap_password != null && ap_password.length() <= 15 &&
@@ -113,7 +118,7 @@ public class AdminController {
     }
 
     //查询陪诊师
-    public  ResultSet selectAp(String ap_no, String ap_password, String ap_name, String ap_phone_number, String ap_type, String ap_state) {
+    public  List<AccompanyingPerson> selectAp(String ap_no, String ap_password, String ap_name, String ap_phone_number, String ap_type, String ap_state) {
         AccompanyingPerson accompanyingPerson = new AccompanyingPerson(ap_no, ap_password, ap_name, ap_phone_number, ap_type, ap_state);
         return accompanyingPersonService.select(accompanyingPerson);
     }
@@ -146,7 +151,7 @@ public class AdminController {
     }
 
     //查询预约信息
-    public ResultSet selectAppointmentView(String appointment_no, String user_no,String user_name,String user_phone, String ap_no,String ap_name,String ap_phone,String ap_type, String appointment_state) {
+    public List<AppointmentView> selectAppointmentView(String appointment_no, String user_no, String user_name, String user_phone, String ap_no, String ap_name, String ap_phone, String ap_type, String appointment_state) {
         User user = new User(user_no,null,user_name,user_phone);
         AccompanyingPerson ap = new AccompanyingPerson(ap_no,null,ap_name,ap_phone,ap_type,null);
         return appointmentViewService.select(user,ap,appointment_no,appointment_state);
@@ -170,29 +175,6 @@ public class AdminController {
         return applicationService.delete(application);
     }
 
-    //更新兼职信息（同意）
-    public boolean updateApplicationByNoAC(String application_no, String user_no, String ap_type) {
-        if(application_no==null){
-            return false;
-        }
-
-        ResultSet rs = applicationService.select(new Application(application_no,null,null,null));
-        Application application = applicationService.ConvertToApplication(rs);
-        application.setApplication_State("同意");
-        return applicationService.updateByNo(application);
-    }
-
-    //更新兼职信息（拒绝）
-    public boolean updateApplicationByNoRJ(String application_no, String user_no, String ap_type) {
-        if(application_no==null){
-            return false;
-        }
-
-        ResultSet rs = applicationService.select(new Application(application_no,null,null,null));
-        Application application = applicationService.ConvertToApplication(rs);
-        application.setApplication_State("拒绝");
-        return applicationService.updateByNo(application);
-    }
 
     //更新兼职信息
     public boolean updateApplicationByNo(String application_no, String ap_type, String application_state) {
@@ -200,8 +182,8 @@ public class AdminController {
             return false;
         }
 
-        ResultSet rs = applicationService.select(new Application(application_no,null,null,null));
-        Application application = applicationService.ConvertToApplication(rs);
+        List<Application> applicationList = applicationService.select(new Application(application_no,null,null,null));
+        Application application = applicationList.get(0);
 
         application.setAp_type(ap_type);
         application.setApplication_State(application_state);
@@ -210,7 +192,7 @@ public class AdminController {
 
 
     //查询兼职信息
-    public ResultSet selectApplicationView(String application_no, String user_no,String user_name,String user_phone,String ap_type, String application_state) {
+    public List<ApplicationView> selectApplicationView(String application_no, String user_no, String user_name, String user_phone, String ap_type, String application_state) {
        User user = new User(user_no,null,user_name,user_phone);
        return applicationViewService.select(user,ap_type,application_no,application_state);
     }

@@ -119,11 +119,11 @@ public class UserLogin extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // 在这里添加登录逻辑
-                String user_no = userText.getText();
-                String user_password = new String(passwordText.getPassword());
+                String user_no = userText.getText().trim();
+                String user_password = new String(passwordText.getPassword()).trim();
 
                 try {
-                    if (userController.checkUser(user_no,user_password)) {
+                    if (!"".equals(user_no) && !"".equals(user_password) && userController.checkUser(user_no,user_password)) {
                         JOptionPane.showMessageDialog(mainFrame, "登录成功");
                         //添加控制
                         mainFrame.showPanel("UserPanel");
@@ -201,12 +201,13 @@ public class UserLogin extends JPanel {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         // 在这里添加注册逻辑
-                        String user_password = new String(passwordField.getPassword());
-                        String user_name = nameField.getText();
-                        String user_phone = phoneField.getText();
+                        String user_password = new String(passwordField.getPassword()).trim();
+                        String user_name = nameField.getText().trim();
+                        String user_phone = phoneField.getText().trim();
 
-                        if (userController.checkMessage(user_password,user_name,user_password)) {
+                        if (userController.checkMessage(user_password,user_name,user_phone)) {
                             User user = userController.registerUser(user_password,user_name,user_phone);
+
                             JOptionPane.showMessageDialog(registerFrame, "注册成功成功\n" +
                                     "账号:" + user.getUser_no() + "\n" +
                                     "密码:" + user.getUser_Password() + "\n" +

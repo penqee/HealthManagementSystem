@@ -1,12 +1,15 @@
 package repository;
 
 import model.Application;
+import model.Appointment;
 import utils.DBUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class ApplicationRepository {
@@ -83,7 +86,9 @@ public class ApplicationRepository {
         return false;
     }
     //查询
-    public ResultSet select(Application application) { //根据application中的信息进行查询
+    public List<Application> select(Application application) { //根据application中的信息进行查询
+        List<Application> dataList = new ArrayList<>();
+
         StringBuilder sql = new StringBuilder("SELECT * FROM application WHERE 1=1");
 
         if (application.getApplication_no() != null && !application.getApplication_no().isEmpty()) {
@@ -115,7 +120,21 @@ public class ApplicationRepository {
                 stmt.setString(index++, application.getApplication_State());
             }
 
-            return stmt.executeQuery();
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    // 将每一行数据读取到Application 对象中
+                    Application fetchedApplication = new Application(null,null,null,null);
+                    fetchedApplication.setApplication_no(rs.getString("application_no"));
+                    fetchedApplication.setUser_no(rs.getString("user_no"));
+                    fetchedApplication.setAp_type(rs.getString("ap_type"));
+                    fetchedApplication.setApplication_State(rs.getString("application_state"));
+
+                    // 将 Application 对象添加到 dataList 中
+                    dataList.add(fetchedApplication);
+                }
+            }
+
+            return dataList.isEmpty() ? null : dataList;
         } catch (SQLException e) {
             e.printStackTrace();
         }

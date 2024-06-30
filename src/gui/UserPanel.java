@@ -1,6 +1,9 @@
 package gui;
 
 import controller.UserController;
+import model.AccompanyingPerson;
+import model.ApplicationView;
+import model.AppointmentView;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -10,6 +13,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public class UserPanel extends JPanel {
     private MainFrame mainFrame;
@@ -136,15 +140,17 @@ public class UserPanel extends JPanel {
     }
 
     private void loadAccompanyingPersons(String type, DefaultTableModel tableModel) throws SQLException {
-        ResultSet rs = userController.selectFreeAccompanyingPerson(type);
+        List<AccompanyingPerson> accompanyingPersonList = userController.selectFreeAccompanyingPerson(type);
         tableModel.setRowCount(0); // 清空表格数据
-        while (rs.next()) {
-            String apNo = rs.getString("ap_no");
-            String apName = rs.getString("ap_name");
-            String apPhoneNumber = rs.getString("ap_phone_number");
-            String apType = rs.getString("ap_type");
-            String apState = rs.getString("ap_state");
-            tableModel.addRow(new Object[]{apNo, apName, apPhoneNumber, apType, apState});
+        if (accompanyingPersonList != null) {
+            for (AccompanyingPerson accompanyingPerson : accompanyingPersonList) {
+                String apNo = accompanyingPerson.getAp_no();
+                String apName = accompanyingPerson.getAp_name();
+                String apPhoneNumber = accompanyingPerson.getAp_phone_number();
+                String apType = accompanyingPerson.getAp_type();
+                String apState = accompanyingPerson.getAp_state();
+                tableModel.addRow(new Object[]{apNo, apName, apPhoneNumber, apType, apState});
+            }
         }
     }
 
@@ -247,16 +253,18 @@ public class UserPanel extends JPanel {
 
 
     private void loadApplicationStatus(DefaultTableModel tableModel) throws SQLException {
-        ResultSet rs = userController.selectSelfApplicationView();
+        List<ApplicationView> applicationViewList = userController.selectSelfApplicationView();
         tableModel.setRowCount(0); // 清空表格数据
-        while (rs.next()) {
-            String application_no = rs.getString("application_no");
-            String user_no = rs.getString("user_no");
-            String user_name = rs.getString("user_name");
-            String user_phone= rs.getString("user_phone_number");
-            String ap_type = rs.getString("ap_type");
-            String application_state = rs.getString("application_state");
-            tableModel.addRow(new Object[]{application_no, user_no, user_name, user_phone, ap_type, application_state});
+        if (applicationViewList != null) {
+            for (ApplicationView applicationView : applicationViewList) {
+                String application_no = applicationView.getApplication_no();
+                String user_no = applicationView.getUser_no();
+                String user_name = applicationView.getUser_name();
+                String user_phone = applicationView.getUser_phone_number();
+                String ap_type = applicationView.getAp_type();
+                String application_state = applicationView.getApplication_state();
+                tableModel.addRow(new Object[]{application_no, user_no, user_name, user_phone, ap_type, application_state});
+            }
         }
     }
 
@@ -358,7 +366,8 @@ public class UserPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = table.getSelectedRow();
-                String appointType = tableModel.getValueAt(selectedRow, 8).toString();
+                String appointType = null;
+                if (selectedRow >= 0) appointType = tableModel.getValueAt(selectedRow, 8).toString();
 
                 if (selectedRow >= 0 && "正在进行".equals(appointType)) {
                     String appointmentNo = tableModel.getValueAt(selectedRow, 0).toString();
@@ -379,20 +388,26 @@ public class UserPanel extends JPanel {
     }
 
     private void loadAppointments(String type, DefaultTableModel tableModel) throws SQLException {
-        ResultSet rs = userController.selectSelfAppointmentView(type);
+        List<AppointmentView> appointmentViewList = userController.selectSelfAppointmentView(type);
         tableModel.setRowCount(0); // 清空表格数据
-        while (rs.next()) {
-            String appointment_no = rs.getString("appointment_no");
-            String user_no = rs.getString("user_no");
-            String user_name = rs.getString("user_name");
-            String user_phone = rs.getString("user_phone_number");
-            String ap_no = rs.getString("ap_no");
-            String ap_name = rs.getString("ap_name");
-            String ap_phone = rs.getString("ap_phone_number");
-            String ap_type = rs.getString("ap_type");
-            String appointment_state = rs.getString("appointment_state");
-            tableModel.addRow(new Object[]{appointment_no, user_no, user_name, user_phone, ap_no, ap_name, ap_phone, ap_type, appointment_state});
+        if (appointmentViewList != null) {
+            for (AppointmentView appointmentView : appointmentViewList) {
+                String appointment_no = appointmentView.getAppointment_no();
+                String user_no = appointmentView.getUser_no();
+                String user_name = appointmentView.getUser_name();
+                String user_phone = appointmentView.getUser_phone_number();
+                String ap_no = appointmentView.getAp_no();
+                String ap_name = appointmentView.getAp_name();
+                String ap_phone = appointmentView.getAp_phone_number();
+                String ap_type = appointmentView.getAp_type();
+                String appointment_state = appointmentView.getAppointment_state();
+                tableModel.addRow(new Object[]{appointment_no, user_no, user_name, user_phone, ap_no, ap_name, ap_phone, ap_type, appointment_state});
+                //System.out.println("123");
+            }
+            //System.out.println("456");
+
         }
+        System.out.println("456");
     }
 
 

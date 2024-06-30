@@ -1,12 +1,14 @@
 package gui;
 
 import controller.AdminController;
+import model.*;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public class AdminPanel extends JPanel {
     private MainFrame mainFrame;
@@ -141,6 +143,7 @@ public class AdminPanel extends JPanel {
                 addGbc.insets = new Insets(5, 5, 5, 5);
                 addGbc.fill = GridBagConstraints.HORIZONTAL;
 
+                /*
                 addGbc.gridx = 0;
                 addGbc.gridy = 0;
                 addGbc.anchor = GridBagConstraints.EAST;
@@ -151,6 +154,8 @@ public class AdminPanel extends JPanel {
                 addGbc.anchor = GridBagConstraints.WEST;
                 JTextField newUserNoField = new JTextField(15);
                 addPanel.add(newUserNoField, addGbc);
+
+                 */
 
                 addGbc.gridx = 0;
                 addGbc.gridy = 1;
@@ -184,6 +189,7 @@ public class AdminPanel extends JPanel {
                 addGbc.anchor = GridBagConstraints.WEST;
                 JTextField newUserPhoneField = new JTextField(15);
                 addPanel.add(newUserPhoneField, addGbc);
+
 
                 // 添加用于保存按钮的面板
                 addGbc.gridx = 0;
@@ -361,14 +367,16 @@ public class AdminPanel extends JPanel {
     }
 
     private void loadUsers(String userNo,String userPassword, String userName, String userPhone,DefaultTableModel tableModel) throws SQLException {
-        ResultSet rs = adminController.selectUser(userNo,userPassword,userName,userPhone);
+        List<User>userList = adminController.selectUser(userNo,userPassword,userName,userPhone);
         tableModel.setRowCount(0); // 清空表格数据
-        while (rs.next()) {
-            String user_no = rs.getString("user_no");
-            String user_password = rs.getString("user_password");
-            String user_name = rs.getString("user_name");
-            String user_phone = rs.getString("user_phone_number");
-            tableModel.addRow(new Object[]{user_no, user_password, user_name, user_phone});
+        if (userList != null) {
+            for (User user : userList) {
+                String user_no = user.getUser_no();
+                String user_password = user.getUser_Password();
+                String user_name = user.getUser_name();
+                String user_phone = user.getUser_phone_number();
+                tableModel.addRow(new Object[]{user_no, user_password, user_name, user_phone});
+            }
         }
     }
 
@@ -476,10 +484,10 @@ public class AdminPanel extends JPanel {
                 String apPassword = apPasswordField.getText();
                 String apName = apNameField.getText();
                 String apPhone = apPhoneField.getText();
-                String apType = apServiceTypeComboBox.getSelectedItem().toString();
+                String apType = (String) apServiceTypeComboBox.getSelectedItem();
                 if ("所有".equals(apType)) apType = null;
 
-                String apStatus = apServiceTypeComboBox.getSelectedItem().toString();
+                String apStatus = (String) apServiceTypeComboBox.getSelectedItem();
                 if ("所有".equals(apStatus)) apStatus = null;
 
                 try {
@@ -502,6 +510,7 @@ public class AdminPanel extends JPanel {
                 addGbc.insets = new Insets(5, 5, 5, 5);
                 addGbc.fill = GridBagConstraints.HORIZONTAL;
 
+                /*
                 addGbc.gridx = 0;
                 addGbc.gridy = 0;
                 addGbc.anchor = GridBagConstraints.EAST;
@@ -512,6 +521,8 @@ public class AdminPanel extends JPanel {
                 addGbc.anchor = GridBagConstraints.WEST;
                 JTextField newApNoField = new JTextField(15);
                 addPanel.add(newApNoField, addGbc);
+
+                 */
 
                 addGbc.gridx = 0;
                 addGbc.gridy = 1;
@@ -589,8 +600,8 @@ public class AdminPanel extends JPanel {
                         String apPassword = newApPasswordField.getText();
                         String apName = newApNameField.getText();
                         String apPhone = newApPhoneField.getText();
-                        String apType = newAPServiceTypeComboBox.getSelectedItem().toString();
-                        String apState = newAPStatesComboBox.getSelectedItem().toString();
+                        String apType = (String) newAPServiceTypeComboBox.getSelectedItem();
+                        String apState = (String) newAPStatesComboBox.getSelectedItem();
 
                         if (adminController.insertAP(apPassword,apName,apPhone,apType,apState)) {
                             JOptionPane.showMessageDialog(addFrame,"添加成功");
@@ -716,8 +727,8 @@ public class AdminPanel extends JPanel {
                             String apPassword = updateApPasswordField.getText();
                             String apName = updateApNameField.getText();
                             String apPhone = updateApPhoneField.getText();
-                            String apType = updateAPServiceTypeComboBox.getSelectedItem().toString();
-                            String apState = updateAPStatesComboBox.getSelectedItem().toString();
+                            String apType = (String) updateAPServiceTypeComboBox.getSelectedItem();
+                            String apState = (String) updateAPStatesComboBox.getSelectedItem();
 
                             if (adminController.updateAPByNo(apNo,apPassword,apName,apPhone,apType,apState) ) {
                                 JOptionPane.showMessageDialog(updateFrame,"更新成功");
@@ -771,16 +782,18 @@ public class AdminPanel extends JPanel {
         return panel;
     }
     private void loadAPs(String apNo,String apPassword, String apName, String apPhone, String apType, String apState, DefaultTableModel tableModel) throws SQLException {
-        ResultSet rs = adminController.selectAp(apNo,apPassword,apName,apPhone,apType,apState);
+        List<AccompanyingPerson> accompanyingPersonList = adminController.selectAp(apNo,apPassword,apName,apPhone,apType,apState);
         tableModel.setRowCount(0); // 清空表格数据
-        while (rs.next()) {
-            String ap_no = rs.getString("ap_no");
-            String ap_password = rs.getString("ap_password");
-            String ap_name = rs.getString("ap_name");
-            String ap_phone = rs.getString("ap_phone_number");
-            String ap_type = rs.getString("ap_type");
-            String ap_State = rs.getString("ap_state");
-            tableModel.addRow(new Object[]{ap_no, ap_password, ap_name, ap_phone, ap_type, ap_State});
+        if (accompanyingPersonList != null) {
+            for (AccompanyingPerson accompanyingPerson : accompanyingPersonList) {
+                String ap_no = accompanyingPerson.getAp_no();
+                String ap_password = accompanyingPerson.getAp_password();
+                String ap_name = accompanyingPerson.getAp_name();
+                String ap_phone = accompanyingPerson.getAp_phone_number();
+                String ap_type = accompanyingPerson.getAp_type();
+                String ap_State = accompanyingPerson.getAp_state();
+                tableModel.addRow(new Object[]{ap_no, ap_password, ap_name, ap_phone, ap_type, ap_State});
+            }
         }
     }
 
@@ -921,10 +934,10 @@ public class AdminPanel extends JPanel {
                 String apNo = apNoField.getText();
                 String apName = apNameField.getText();
                 String apPhone = apPhoneField.getText();
-                String apType = apServiceTypeComboBox.getSelectedItem().toString();
+                String apType = (String) apServiceTypeComboBox.getSelectedItem();
                 if ("所有".equals(apType)) apType = null;
 
-                String apptStates = apptStatesComboBox.getSelectedItem().toString();
+                String apptStates = (String) apptStatesComboBox.getSelectedItem();
                 if ("所有".equals(apptStates)) apptStates = null;
 
                 try {
@@ -993,7 +1006,6 @@ public class AdminPanel extends JPanel {
                 String[] statusType = {"正在进行", "已结束"};
                 JComboBox<String> newApptStatesComboBox = new JComboBox<>(statusType);
                 addPanel.add(newApptStatesComboBox, addGbc);
-
 
 */
                 // 添加用于保存按钮的面板
@@ -1114,9 +1126,9 @@ public class AdminPanel extends JPanel {
                             String apptNo = updateApptNoField.getText();
                             String userNo = updateUserNoField.getText();
                             String apNo = updateApNoField.getText();
-                            String apptStates = updateApptStatesComboBox.getSelectedItem().toString();
+                            String apptStates = (String) updateApptStatesComboBox.getSelectedItem();
 
-                            if (adminController.updateAppointmentByNo(apptNo,userNo,apptNo,apptStates)) {
+                            if (adminController.updateAppointmentByNo(apptNo,userNo,apNo,apptStates)) {
                                 JOptionPane.showMessageDialog(updateFrame,"更新成功");
                             } else {
                                 JOptionPane.showMessageDialog(updateFrame,"更新失败");
@@ -1169,19 +1181,21 @@ public class AdminPanel extends JPanel {
     }
 
     private void loadAppointments(String appointmentNo, String userNo,String userName,String userPhone, String apNo,String apName,String apPhone,String apType, String appointmentState, DefaultTableModel tableModel) throws SQLException {
-        ResultSet rs = adminController.selectAppointmentView(appointmentNo,userNo,userName,userPhone,appointmentNo,apName,apPhone,apType,appointmentState);
+        List<AppointmentView> appointmentViewList = adminController.selectAppointmentView(appointmentNo,userNo,userName,userPhone,apNo,apName,apPhone,apType,appointmentState);
         tableModel.setRowCount(0); // 清空表格数据
-        while (rs.next()) {
-            String appointment_no = rs.getString("appointment_no");
-            String user_no = rs.getString("user_no");
-            String user_name = rs.getString("user_name");
-            String user_phone = rs.getString("user_phone_number");
-            String ap_no = rs.getString("ap_no");
-            String ap_name = rs.getString("ap_name");
-            String ap_phone = rs.getString("ap_phone_number");
-            String ap_type = rs.getString("ap_type");
-            String appointment_state = rs.getString("appointment_state");
-            tableModel.addRow(new Object[]{appointment_no, user_no, user_name, user_phone, ap_no, ap_name, ap_phone, ap_type, appointment_state});
+        if (appointmentViewList != null) {
+            for (AppointmentView appointmentView : appointmentViewList) {
+                String appointment_no = appointmentView.getAppointment_no();
+                String user_no = appointmentView.getUser_no();
+                String user_name = appointmentView.getUser_name();
+                String user_phone = appointmentView.getUser_phone_number();
+                String ap_no = appointmentView.getAp_no();
+                String ap_name = appointmentView.getAp_name();
+                String ap_phone = appointmentView.getAp_phone_number();
+                String ap_type = appointmentView.getAp_type();
+                String appointment_state = appointmentView.getAppointment_state();
+                tableModel.addRow(new Object[]{appointment_no, user_no, user_name, user_phone, ap_no, ap_name, ap_phone, ap_type, appointment_state});
+            }
         }
     }
 
@@ -1289,10 +1303,10 @@ public class AdminPanel extends JPanel {
                 String userNo = userNoField.getText();
                 String userName = userNameField.getText();
                 String userPhone = userPhoneField.getText();
-                String serviceType =  serviceTypeComboBox.getSelectedItem().toString();
+                String serviceType = (String) serviceTypeComboBox.getSelectedItem();
                 if ("所有".equals(serviceType)) serviceType = null;
 
-                String applicationStates =  applicationStatesComboBox.getSelectedItem().toString();
+                String applicationStates = (String) applicationStatesComboBox.getSelectedItem();
                 if ("所有".equals(applicationStates)) applicationStates = null;
 
                 try {
@@ -1385,7 +1399,7 @@ public class AdminPanel extends JPanel {
                     public void actionPerformed(ActionEvent e) {
 
                         String userNo = newUserNoField.getText();
-                        String serviceType = (String) newServiceTypeComboBox.getSelectedItem().toString();
+                        String serviceType = (String) newServiceTypeComboBox.getSelectedItem();
                         //String applicationStatus = (String) newApplicationStatusComboBox.getSelectedItem();
 
                         if (adminController.insertApplication(userNo,serviceType) ) {
@@ -1486,15 +1500,28 @@ public class AdminPanel extends JPanel {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             String applicationNo = updateApplicationNoField.getText();
-                            //String userNo = updateUserNoField.getText();
-                            String apTyep = updateServiceTypeComboBox.getSelectedItem().toString();
-                            String applcationStates = updateApplicationStatesComboBox.getSelectedItem().toString();
+                            String userNo = updateUserNoField.getText();
+                            String apType = (String) updateServiceTypeComboBox.getSelectedItem();
+                            String applicationStates = (String) updateApplicationStatesComboBox.getSelectedItem();
 
-                            if (adminController.updateApplicationByNo(applicationNo,apTyep,applcationStates) ) {
+                            if ("同意".equals(applicationStates)) {
+                                List<User> userList = adminController.selectUser(userNo,null,null,null);
+                                User user = null;
+                                if (userList != null && !userList.isEmpty()) {
+                                    user = userList.get(0);
+                                }
+
+                                if (user != null) adminController.userToAp(user,apType);
+                            }
+
+                            if (adminController.updateApplicationByNo(applicationNo,apType,applicationStates) ) {
                                 JOptionPane.showMessageDialog(updateFrame,"更新成功");
                             } else {
                                 JOptionPane.showMessageDialog(updateFrame,"更新失败");
+
+                                adminController.deleteAp(userNo,null,null,null,null,null);
                             }
+
 
                             //更新表格
                             try {
@@ -1542,16 +1569,18 @@ public class AdminPanel extends JPanel {
     }
 
     private void loadApplications(String applicationNo, String userNo,String userName,String userPhone,String apType, String applicationState, DefaultTableModel tableModel) throws SQLException {
-        ResultSet rs = adminController.selectApplicationView(applicationNo,userNo,userName,userPhone,apType,applicationState);
+        List<ApplicationView> applicationViews = adminController.selectApplicationView(applicationNo,userNo,userName,userPhone,apType,applicationState);
         tableModel.setRowCount(0); // 清空表格数据
-        while (rs.next()) {
-            String application_no = rs.getString("application_no");
-            String user_no = rs.getString("user_no");
-            String user_name = rs.getString("user_name");
-            String user_phone= rs.getString("user_phone_number");
-            String ap_type = rs.getString("ap_type");
-            String application_state = rs.getString("application_state");
-            tableModel.addRow(new Object[]{application_no, user_no, user_name, user_phone, ap_type, application_state});
+        if (applicationViews != null) {
+            for (ApplicationView applicationView : applicationViews) {
+                String application_no = applicationView.getApplication_no();
+                String user_no = applicationView.getUser_no();
+                String user_name = applicationView.getUser_name();
+                String user_phone = applicationView.getUser_phone_number();
+                String ap_type = applicationView.getAp_type();
+                String application_state = applicationView.getApplication_state();
+                tableModel.addRow(new Object[]{application_no, user_no, user_name, user_phone, ap_type, application_state});
+            }
         }
     }
 

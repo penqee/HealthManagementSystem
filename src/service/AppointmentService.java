@@ -1,11 +1,10 @@
 package service;
 
 import model.Appointment;
-import model.User;
 import repository.AppointmentRepository;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public class AppointmentService {
     private AppointmentRepository appointmentRepository;
@@ -26,7 +25,7 @@ public class AppointmentService {
         return appointmentRepository.updateByNo(appointment);
     }
     //查
-    public ResultSet select(Appointment appointment) {
+    public List<Appointment> select(Appointment appointment) {
         return appointmentRepository.select(appointment);
     }
 

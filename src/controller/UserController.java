@@ -8,6 +8,7 @@ import utils.ThreadLocalUtil;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 
 public class UserController { //用户模块需要的功能
     UserService userService;
@@ -34,12 +35,12 @@ public class UserController { //用户模块需要的功能
         }
 
         User check_user = new User(user_no, user_password,null,null);
-        ResultSet rs = userService.select(check_user);
-        if (rs.next()){
+        List<User> userList = userService.select(check_user);
+        if (userList != null && !userList.isEmpty()){
 
             HashMap<String,Object> map = new HashMap();
-            map.put("user_no",rs.getString("user_no"));
-            map.put("user_name",rs.getString("user_name"));
+            map.put("user_no",userList.get(0).getUser_no());
+            map.put("user_password",userList.get(0).getUser_Password());
 
             //保存登录用户信息
             ThreadLocalUtil.set(map);
@@ -54,8 +55,8 @@ public class UserController { //用户模块需要的功能
         String user_no = (String) map.get("user_no");
         String user_password = (String) map.get("user_password");
         User user_info = new User(user_no,user_password,null, null);
-        ResultSet rs = userService.select(user_info);
-        return userService.ConvertToUser(rs);
+        List<User> list = userService.select(user_info);
+        return list.get(0);
     }
 
 
@@ -82,7 +83,7 @@ public class UserController { //用户模块需要的功能
     }
 
     //预约相关
-    public ResultSet selectFreeAccompanyingPerson(String ap_type) { //根据类型查询出状态为空闲的陪诊师表
+    public List<AccompanyingPerson> selectFreeAccompanyingPerson(String ap_type) { //根据类型查询出状态为空闲的陪诊师表
         AccompanyingPerson ap = new AccompanyingPerson(null, null, null, null, ap_type, "空闲");
         return accompanyingPersonService.select(ap);
     }
@@ -100,9 +101,9 @@ public class UserController { //用户模块需要的功能
 
         if (f) {
             AccompanyingPerson ap = new AccompanyingPerson(ap_no, null, null, null, null, null);
-            ResultSet rs = accompanyingPersonService.select(ap);
+            List<AccompanyingPerson> accompanyingPersonList = accompanyingPersonService.select(ap);
 
-            ap = accompanyingPersonService.ConvertToAP(rs);
+            ap = accompanyingPersonList.get(0);
             ap.setAp_state("忙碌");
 
             accompanyingPersonService.updateByNo(ap);
@@ -110,29 +111,26 @@ public class UserController { //用户模块需要的功能
         return f;
 
     }
-    public ResultSet selectSelfAppointmentView(String ap_type) { //从预约信息视图中 查询跟user自己有关的预约记录
+    public List<AppointmentView> selectSelfAppointmentView(String ap_type) { //从预约信息视图中 查询跟user自己有关的预约记录
         HashMap<String, Object> map = ThreadLocalUtil.get();
         String user_no = (String) map.get("user_no");
-        ResultSet rs = userService.select(new User(user_no,null,null,null));
+        List<User> userList = userService.select(new User(user_no,null,null,null));
 
-        User user = userService.ConvertToUser(rs);
+        User user = userList.get(0);
         AccompanyingPerson ap = new AccompanyingPerson(null,null,null,null,ap_type,null);
         return appointmentViewService.select(user,ap,null,null);
     }
 
     public boolean updateAppointmentState(String appointment_no, String ap_no) throws SQLException { //只能将与user有关的预约记录状态从 进行中->已结束
-        ResultSet rs = appointmentService.select(new Appointment(appointment_no,null,null,null));
-        Appointment appointment = appointmentService.ConvertToAppointment(rs);
+        List<Appointment> appointmentList = appointmentService.select(new Appointment(appointment_no,null,null,null));
+        Appointment appointment = appointmentList.get(0);
         appointment.setAppointment_state("已结束");
         boolean f = appointmentService.updateByNo(appointment);
 
         if (f) {
             AccompanyingPerson ap = new AccompanyingPerson(ap_no, null, null, null, null, null);
-            ResultSet r = accompanyingPersonService.select(ap);
-
-            accompanyingPersonService.updateByNo(ap);
+            List<AccompanyingPerson> accompanyingPersonList = accompanyingPersonService.select(ap);
             ap.setAp_state("空闲");
-
             accompanyingPersonService.updateByNo(ap); //更新ap状态
         }
         return f;
@@ -145,9 +143,9 @@ public class UserController { //用户模块需要的功能
         String user_no = (String) map.get("user_no");
 
         Application ap = new Application(null, user_no, null, null);
-        ResultSet rs = applicationService.select(ap);
+        List<Application> applicationList = applicationService.select(ap);
 
-        if (rs.next()) {//不存在才能申请兼职
+        if (applicationList != null && !applicationList.isEmpty()) {//不存在才能申请兼职
             return false;
         }
 
@@ -159,12 +157,12 @@ public class UserController { //用户模块需要的功能
 
     }
 
-    public ResultSet selectSelfApplicationView() { //从申请信息视图 查询跟user自己有关的申请记录状态
+    public List<ApplicationView> selectSelfApplicationView() { //从申请信息视图 查询跟user自己有关的申请记录状态
         HashMap<String, Object> map = ThreadLocalUtil.get();
         String user_no = (String) map.get("user_no");
-        ResultSet rs = userService.select(new User(user_no,null,null,null));
+        List<User> userList = userService.select(new User(user_no,null,null,null));
 
-        User user = userService.ConvertToUser(rs);
+        User user = userList.get(0);
         return applicationViewService.select(user,null,null,null);
     }
 

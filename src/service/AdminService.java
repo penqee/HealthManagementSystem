@@ -5,6 +5,7 @@ import repository.AdminRepository;
 
 
 import java.sql.ResultSet;
+import java.util.List;
 
 public class AdminService {
     private AdminRepository adminRepository;
@@ -14,7 +15,7 @@ public class AdminService {
     }
 
     //²é
-    public ResultSet select(Admin admin) {
+    public List<Admin> select(Admin admin) {
         return adminRepository.select(admin);
     }
 }

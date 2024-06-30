@@ -1,12 +1,15 @@
 package repository;
 
 import model.AccompanyingPerson;
+import model.Application;
 import utils.DBUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class AccompanyingPersonRepository {
@@ -99,7 +102,9 @@ public class AccompanyingPersonRepository {
         return false;
     }
     //查询
-    public ResultSet select(AccompanyingPerson accompanyingPerson) { //根据ap中的信息进行查询
+    public List<AccompanyingPerson> select(AccompanyingPerson accompanyingPerson) { //根据ap中的信息进行查询
+        List<AccompanyingPerson> dataList = new ArrayList<>();
+
         StringBuilder sql = new StringBuilder("SELECT * FROM accompanyingPerson WHERE 1=1");
 
         if (accompanyingPerson.getAp_no() != null && !accompanyingPerson.getAp_no().isEmpty()) {
@@ -143,7 +148,23 @@ public class AccompanyingPersonRepository {
                 stmt.setString(index++, accompanyingPerson.getAp_state());
             }
 
-            return stmt.executeQuery();
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    // 将每一行数据读取到 ap 对象中
+
+                    AccompanyingPerson fetchedap = new AccompanyingPerson(null,null,null,null,null,null);
+                    fetchedap.setAp_no(rs.getString("ap_no"));
+                    fetchedap.setAp_password(rs.getString("ap_password"));
+                    fetchedap.setAp_name(rs.getString("ap_name"));
+                    fetchedap.setAp_phone_number(rs.getString("ap_phone_number"));
+                    fetchedap.setAp_type(rs.getString("ap_type"));
+                    fetchedap.setAp_state(rs.getString("ap_state"));
+                    // 将 ap 对象添加到 dataList 中
+                    dataList.add(fetchedap);
+                }
+            }
+
+            return dataList.isEmpty() ? null : dataList;
         } catch (SQLException e) {
             e.printStackTrace();
 

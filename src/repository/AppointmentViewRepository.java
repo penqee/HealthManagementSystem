@@ -1,6 +1,8 @@
 package repository;
 
 import model.AccompanyingPerson;
+import model.Appointment;
+import model.AppointmentView;
 import model.User;
 import utils.DBUtil;
 
@@ -8,11 +10,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class AppointmentViewRepository {
-    public ResultSet select(User user, AccompanyingPerson ap, String appointment_no, String appointment_state) { //�����û��е���Ϣ �� ����ʦ���� ����Ϣ״̬ ��ѯ������Ϣ
-        StringBuilder sql = new StringBuilder("SELECT * FROM applicationView WHERE 1=1");
+    public List<AppointmentView> select(User user, AccompanyingPerson ap, String appointment_no, String appointment_state) { //�����û��е���Ϣ �� ����ʦ���� ����Ϣ״̬ ��ѯ������Ϣ
+        List<AppointmentView> dataList = new ArrayList<>();
+
+        StringBuilder sql = new StringBuilder("SELECT * FROM appointmentView WHERE 1=1");
 
         // �����û���Ϣ������ѯ����
         if (user.getUser_no() != null && !user.getUser_no().isEmpty()) {
@@ -41,11 +47,11 @@ public class AppointmentViewRepository {
 
         // ԤԼ��Ϣ���
         if (appointment_no != null && !appointment_no.isEmpty()) {
-            sql.append(" AND application_no = ?");
+            sql.append(" AND appointment_no = ?");
         }
         // ԤԼ��Ϣ״̬
         if (appointment_state != null && !appointment_state.isEmpty()) {
-            sql.append(" AND application_state = ?");
+            sql.append(" AND appointment_state = ?");
         }
 
         try (Connection conn = DBUtil.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
@@ -84,7 +90,26 @@ public class AppointmentViewRepository {
                 stmt.setString(index++, appointment_state);
             }
 
-            return stmt.executeQuery();
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    // 将每一行数据读取到 av 对象中
+                    AppointmentView fetchedAppointmentView = new AppointmentView(null, null, null, null,null,null,null,null,null);
+                    fetchedAppointmentView.setAppointment_no(rs.getString("appointment_no"));
+                    fetchedAppointmentView.setUser_no(rs.getString("user_no"));
+                    fetchedAppointmentView.setUser_name(rs.getString("user_name"));
+                    fetchedAppointmentView.setUser_phone_number(rs.getString("user_phone_number"));
+                    fetchedAppointmentView.setAp_no(rs.getString("ap_no"));
+                    fetchedAppointmentView.setAp_name(rs.getString("ap_name"));
+                    fetchedAppointmentView.setAp_phone_number(rs.getString("ap_phone_number"));
+                    fetchedAppointmentView.setAp_type(rs.getString("ap_type"));
+                    fetchedAppointmentView.setAppointment_state(rs.getString("appointment_state"));
+
+                    // 将 av 对象添加到 dataList 中
+                    dataList.add(fetchedAppointmentView);
+                }
+            }
+
+            return dataList.isEmpty() ? null : dataList;
         } catch (SQLException e) {
             e.printStackTrace();
         }

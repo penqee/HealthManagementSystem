@@ -5,6 +5,7 @@ import repository.UserRepository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public class UserService {
     private UserRepository userRepository;
@@ -25,7 +26,7 @@ public class UserService {
         return userRepository.updateByNo(user);
     }
     //查
-    public ResultSet select(User user) {
+    public List<User> select(User user) {
         return userRepository.select(user);
     }
 

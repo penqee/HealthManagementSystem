@@ -6,6 +6,7 @@ import repository.ApplicationRepository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public class ApplicationService {
     private ApplicationRepository applicationRepository;
@@ -26,7 +27,7 @@ public class ApplicationService {
         return applicationRepository.updateByNo(application);
     }
     //查
-    public ResultSet select(Application application) {
+    public List<Application> select(Application application) {
         return applicationRepository.select(application);
     }
 

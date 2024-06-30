@@ -115,11 +115,11 @@ public class AdminLogin extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // 在这里添加登录逻辑
-                String admin_no = userText.getText();
-                String admin_password = new String(passwordText.getPassword());
+                String admin_no = userText.getText().trim();
+                String admin_password = new String(passwordText.getPassword()).trim();
 
                 try {
-                    if (adminController.checkAdmin(admin_no,admin_password) ) {
+                    if (!"".equals(admin_no) && !"".equals(admin_password) && adminController.checkAdmin(admin_no,admin_password) ) {
                         JOptionPane.showMessageDialog(mainFrame, "登录成功");
                         mainFrame.showPanel("AdminPanel");
                     } else {

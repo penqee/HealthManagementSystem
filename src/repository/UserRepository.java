@@ -7,6 +7,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserRepository {
     //用户表 增删改查
@@ -81,7 +83,10 @@ public class UserRepository {
         return false;
     }
     //查询
-    public ResultSet select(User user) { //根据user中的信息进行查询
+    public List<User> select(User user) { //根据user中的信息进行查询
+        List<User> dataList = new ArrayList<>();
+
+
         StringBuilder sql = new StringBuilder("SELECT * FROM user WHERE 1=1");
 
         // 根据用户信息构建查询条件
@@ -97,6 +102,7 @@ public class UserRepository {
         if (user.getUser_phone_number() != null && !user.getUser_phone_number().isEmpty()) {
             sql.append(" AND user_phone_number = ?");
         }
+
 
         try (Connection conn = DBUtil.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
             int index = 1;
@@ -115,13 +121,27 @@ public class UserRepository {
                 stmt.setString(index++, user.getUser_phone_number());
             }
 
-            return stmt.executeQuery();
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    // 将每一行数据读取到 User 对象中
+                    User fetchedUser = new User(null, null, null, null);
+                    fetchedUser.setUser_no(rs.getString("user_no"));
+                    fetchedUser.setUser_Password(rs.getString("user_password"));
+                    fetchedUser.setUser_name(rs.getString("user_name"));
+                    fetchedUser.setUser_phone_number(rs.getString("user_phone_number"));
+
+                    // 将 User 对象添加到 dataList 中
+                    dataList.add(fetchedUser);
+                }
+            }
+
+            return dataList.isEmpty() ? null : dataList;
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return null;
     }
-
-
 }
 

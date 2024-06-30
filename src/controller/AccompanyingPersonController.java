@@ -7,6 +7,7 @@ import utils.ThreadLocalUtil;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 
 public class AccompanyingPersonController {
     UserService userService;
@@ -33,12 +34,12 @@ public class AccompanyingPersonController {
         }
 
         AccompanyingPerson check_ap = new AccompanyingPerson(ap_no, ap_password,null,null,null,null);
-        ResultSet rs = accompanyingPersonService.select(check_ap);
-        if (rs.next()){
+        List<AccompanyingPerson> accompanyingPersonList = accompanyingPersonService.select(check_ap);
+        if (accompanyingPersonList != null && !accompanyingPersonList.isEmpty()){
 
             HashMap<String,Object> map = new HashMap();
-            map.put("ap_no",rs.getString("ap_no"));
-            map.put("ap_name",rs.getString("ap_name"));
+            map.put("ap_no",accompanyingPersonList.get(0).getAp_no());
+            map.put("ap_password",accompanyingPersonList.get(0).getAp_password());
 
             //保存登录陪诊师用户信息
             ThreadLocalUtil.set(map);
@@ -53,21 +54,21 @@ public class AccompanyingPersonController {
         String ap_no = (String) map.get("ap_no");
         String ap_password = (String) map.get("ap_password");
         AccompanyingPerson ap_info = new AccompanyingPerson(ap_no,ap_password,null, null,null,null);
-        ResultSet rs = accompanyingPersonService.select(ap_info);
-        return accompanyingPersonService.ConvertToAP(rs);
+        List<AccompanyingPerson> dataList  = accompanyingPersonService.select(ap_info);
+        return dataList.get(0);
     }
 
     // 更新自己的状态
     public boolean updateSelfState() throws SQLException {
-        ResultSet rs = selectSelfAppointment();
-        if (rs.next()) {
+        List<AppointmentView> dataList = selectSelfAppointment();
+        if (!dataList.isEmpty()) {
             return false;
         } else {
             HashMap<String, Object> map = ThreadLocalUtil.get();
             String ap_no = (String) map.get("ap_no");
-            ResultSet r = accompanyingPersonService.select(new AccompanyingPerson(ap_no,null,null,null,null,null));
+            List<AccompanyingPerson> apList = accompanyingPersonService.select(new AccompanyingPerson(ap_no,null,null,null,null,null));
 
-            AccompanyingPerson ap = accompanyingPersonService.ConvertToAP(rs);
+            AccompanyingPerson ap = apList.get(0);
             if ("忙碌".equals(ap.getAp_state())) {
                 ap.setAp_state("空闲");
             } else if ("空闲".equals(ap.getAp_state())) {
@@ -78,13 +79,13 @@ public class AccompanyingPersonController {
     }
 
     //查询与自己有关的预约记录
-    public ResultSet selectSelfAppointment() {
+    public List<AppointmentView> selectSelfAppointment() {
         HashMap<String, Object> map = ThreadLocalUtil.get();
         String ap_no = (String) map.get("ap_no");
-        ResultSet rs = accompanyingPersonService.select(new AccompanyingPerson(ap_no,null,null,null,null,null));
+        List<AccompanyingPerson> dataList = accompanyingPersonService.select(new AccompanyingPerson(ap_no,null,null,null,null,null));
 
-        AccompanyingPerson ap = accompanyingPersonService.ConvertToAP(rs);
-        return appointmentViewService.select(null,ap,null,null);
+        AccompanyingPerson ap = dataList.get(0);
+        return appointmentViewService.select(new User(null,null,null,null),ap,null,null);
     }
 
 }

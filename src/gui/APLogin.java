@@ -116,12 +116,11 @@ public class APLogin extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // 在这里添加登录逻辑
-                String ap_no = userText.getText();
-                String ap_password = new String(passwordText.getPassword());
-
+                String ap_no = userText.getText().trim();
+                String ap_password = new String(passwordText.getPassword()).trim();
 
                 try {
-                    if (apc.checkAP(ap_no,ap_password)) {
+                    if (!"".equals(ap_no) && !"".equals(ap_password) && apc.checkAP(ap_no,ap_password)) {
                         JOptionPane.showMessageDialog(mainFrame, "登录成功");
                         //添加控制
                         mainFrame.showPanel("APPanel");

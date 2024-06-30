@@ -9,8 +9,8 @@ public class Admin {
         return admin_no;
     }
 
-    public void setAdmin_name(String admin_name) {
-        this.admin_no = admin_name;
+    public void setAdmin_no(String admin_no) {
+        this.admin_no = admin_no;
     }
 
     public String getAdmin_password() {

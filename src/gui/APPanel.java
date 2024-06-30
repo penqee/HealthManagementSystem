@@ -1,13 +1,14 @@
 package gui;
 
 import controller.AccompanyingPersonController;
+import model.AppointmentView;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.*;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public class APPanel extends JPanel {
     private MainFrame mainFrame;
@@ -107,19 +108,22 @@ public class APPanel extends JPanel {
     }
 
     private void loadAppointments() throws SQLException {
-        ResultSet rs = apc.selectSelfAppointment();
+        List<AppointmentView> appointmentViewList = apc.selectSelfAppointment();
         tableModel.setRowCount(0); // 清空表格数据
-        while (rs.next()) {
-            String appointment_no = rs.getString("appointment_no");
-            String user_no = rs.getString("user_no");
-            String user_name = rs.getString("user_name");
-            String user_phone = rs.getString("user_phone_number");
-            String ap_no = rs.getString("ap_no");
-            String ap_name = rs.getString("ap_name");
-            String ap_phone = rs.getString("ap_phone_number");
-            String ap_type = rs.getString("ap_type");
-            String appointment_state = rs.getString("appointment_state");
-            tableModel.addRow(new Object[]{appointment_no, user_no, user_name, user_phone, ap_no, ap_name, ap_phone, ap_type, appointment_state});
+        if (appointmentViewList != null) {
+            for (AppointmentView appointmentView : appointmentViewList) {
+                String appointment_no = appointmentView.getAppointment_no();
+                String user_no = appointmentView.getUser_no();
+                String user_name = appointmentView.getUser_name();
+                String user_phone = appointmentView.getUser_phone_number();
+                String ap_no = appointmentView.getAp_no();
+                String ap_name = appointmentView.getAp_name();
+                String ap_phone = appointmentView.getAp_phone_number();
+                String ap_type = appointmentView.getAp_type();
+                String appointment_state = appointmentView.getAppointment_state();
+
+                tableModel.addRow(new Object[]{appointment_no, user_no, user_name, user_phone, ap_no, ap_name, ap_phone, ap_type, appointment_state});
+            }
         }
     }
 

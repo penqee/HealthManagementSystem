@@ -6,6 +6,7 @@ import repository.AccompanyingPersonRepository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public class AccompanyingPersonService {
     private AccompanyingPersonRepository accompanyingPersonRepository;
@@ -26,7 +27,7 @@ public class AccompanyingPersonService {
         return accompanyingPersonRepository.updateByNo(ap);
     }
     //查
-    public ResultSet select(AccompanyingPerson ap) {
+    public List<AccompanyingPerson> select(AccompanyingPerson ap) {
         return accompanyingPersonRepository.select(ap);
     }
 

@@ -1,12 +1,15 @@
 package repository;
 
 import model.Appointment;
+import model.User;
 import utils.DBUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AppointmentRepository {
     //预约信息表 增删改查
@@ -83,7 +86,8 @@ public class AppointmentRepository {
         return false;
     }
     //查询
-    public ResultSet select(Appointment appointment) { //根据appointment中的信息进行查询
+    public List<Appointment> select(Appointment appointment) { //根据appointment中的信息进行查询
+        List<Appointment> dataList = new ArrayList<>();
         StringBuilder sql = new StringBuilder("SELECT * FROM appointment WHERE 1=1");
 
         if (appointment.getAppointment_no() != null && !appointment.getAppointment_no().isEmpty()) {
@@ -115,7 +119,22 @@ public class AppointmentRepository {
                 stmt.setString(index++, appointment.getAppointment_state());
             }
 
-            return stmt.executeQuery();
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    // 将每一行数据读取到 Appointment 对象中
+                    Appointment fetchedAppointment = new Appointment(null,null,null,null);
+                    fetchedAppointment.setAppointment_no(rs.getString("Appointment_no"));
+                    fetchedAppointment.setUser_no(rs.getString("user_no"));
+                    fetchedAppointment.setAp_no(rs.getString("ap_no"));
+                    fetchedAppointment.setAppointment_state(rs.getString("appointment_state"));
+
+                    // 将 Appointment 对象添加到 dataList 中
+                    dataList.add(fetchedAppointment);
+                }
+            }
+
+            return dataList.isEmpty() ? null : dataList;
+
         } catch (SQLException e) {
             e.printStackTrace();
 

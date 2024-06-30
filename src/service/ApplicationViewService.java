@@ -1,9 +1,10 @@
 package service;
 
+import model.ApplicationView;
 import model.User;
 import repository.ApplicationViewRepository;
 
-import java.sql.ResultSet;
+import java.util.List;
 
 public class ApplicationViewService {
     private ApplicationViewRepository applicationViewRepository;
@@ -12,7 +13,7 @@ public class ApplicationViewService {
     }
 
     //��ѯ������Ϣ��ͼ
-    public ResultSet select(User user, String ap_type,String application_no, String application_state) {
+    public List<ApplicationView> select(User user, String ap_type, String application_no, String application_state) {
         return applicationViewRepository.select(user,ap_type,application_no,application_state);
     }
 }
