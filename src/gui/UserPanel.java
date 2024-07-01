@@ -18,8 +18,6 @@ import java.util.List;
 public class UserPanel extends JPanel {
     private MainFrame mainFrame;
     private UserController userController;
-    private JComboBox<String> typeComboBox;
-
 
     public UserPanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
@@ -62,7 +60,7 @@ public class UserPanel extends JPanel {
         centerPanel.add(typeLabel, centerGbc);
 
         // 添加选择框
-        typeComboBox = new JComboBox<>(new String[]{"陪同就医", "提前挂号", "代办问诊", "代取结果", "代办跑腿", "病案到家"});
+        JComboBox<String> typeComboBox = new JComboBox<>(new String[]{"陪同就医", "提前挂号", "代办问诊", "代取结果", "代办跑腿", "病案到家"});;
         centerGbc.gridx = 1;
         centerGbc.gridy = 0;
         centerPanel.add(typeComboBox, centerGbc);
@@ -113,6 +111,7 @@ public class UserPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String selectedType = (String) typeComboBox.getSelectedItem();
+                System.out.println(selectedType);
                 try {
                     loadAccompanyingPersons(selectedType,tableModel);
                 } catch (SQLException ex) {
@@ -151,6 +150,7 @@ public class UserPanel extends JPanel {
                 String apState = accompanyingPerson.getAp_state();
                 tableModel.addRow(new Object[]{apNo, apName, apPhoneNumber, apType, apState});
             }
+            System.out.println("123");
         }
     }
 
@@ -173,7 +173,7 @@ public class UserPanel extends JPanel {
         centerPanel.add(typeLabel, centerGbc);
 
         // 添加选择框
-        typeComboBox = new JComboBox<>(new String[]{"陪同就医", "提前挂号", "代办问诊", "代取结果", "代办跑腿", "病案到家"});
+        JComboBox<String> typeComboBox = new JComboBox<>(new String[]{"陪同就医", "提前挂号", "代办问诊", "代取结果", "代办跑腿", "病案到家"});
         centerGbc.gridx = 1;
         centerGbc.gridy = 0;
         centerPanel.add(typeComboBox, centerGbc);
@@ -381,6 +381,16 @@ public class UserPanel extends JPanel {
                 } else {
                     JOptionPane.showMessageDialog(mainFrame, "只能选择一个“工作中”的记录");
                 }
+
+
+                String selectedType = (String) typeComboBox.getSelectedItem();
+                if ("所有".equals(selectedType)) selectedType = null;
+                //更新表格
+                try {
+                    loadAppointments(selectedType,tableModel);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
@@ -405,9 +415,7 @@ public class UserPanel extends JPanel {
                 //System.out.println("123");
             }
             //System.out.println("456");
-
         }
-        System.out.println("456");
     }
 
 

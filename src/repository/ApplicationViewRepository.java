@@ -87,11 +87,11 @@ public class ApplicationViewRepository { //������Ϣ��ͼ
                 }
             }
 
-            return dataList.isEmpty() ? null : dataList;
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return dataList.isEmpty() ? null : dataList;
     }
 
 }

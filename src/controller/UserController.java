@@ -130,6 +130,7 @@ public class UserController { //用户模块需要的功能
         if (f) {
             AccompanyingPerson ap = new AccompanyingPerson(ap_no, null, null, null, null, null);
             List<AccompanyingPerson> accompanyingPersonList = accompanyingPersonService.select(ap);
+            ap = accompanyingPersonList.get(0);
             ap.setAp_state("空闲");
             accompanyingPersonService.updateByNo(ap); //更新ap状态
         }

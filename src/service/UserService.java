@@ -30,21 +30,6 @@ public class UserService {
         return userRepository.select(user);
     }
 
-    public User ConvertToUser(ResultSet rs){
-        try {
-            if (rs.next()){
-                String uid = rs.getString("user_no");
-                String password = rs.getString("user_password");
-                String username = rs.getString("user_name");
-                String user_phone_number = rs.getString("user_phone_number");
 
-                return new User(uid, password, username, user_phone_number);
-            }
-
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
-        return null;
-    }
 
 }

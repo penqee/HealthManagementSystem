@@ -31,24 +31,5 @@ public class AccompanyingPersonService {
         return accompanyingPersonRepository.select(ap);
     }
 
-
-    public AccompanyingPerson ConvertToAP(ResultSet rs){
-        try {
-            if (rs.next()){
-                String uid = rs.getString("ap_no");
-                String password = rs.getString("ap_password");
-                String ap_name = rs.getString("ap_name");
-                String ap_phone_number = rs.getString("ap_phone_number");
-                String ap_type = rs.getString("ap_type");
-                String ap_state = rs.getString("ap_state");
-
-                return new AccompanyingPerson(uid, password, ap_name, ap_phone_number, ap_type, ap_state);
-            }
-
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
-
-        return null;
-    }
+    
 }

@@ -487,7 +487,7 @@ public class AdminPanel extends JPanel {
                 String apType = (String) apServiceTypeComboBox.getSelectedItem();
                 if ("所有".equals(apType)) apType = null;
 
-                String apStatus = (String) apServiceTypeComboBox.getSelectedItem();
+                String apStatus = (String) apStatesComboBox.getSelectedItem();
                 if ("所有".equals(apStatus)) apStatus = null;
 
                 try {

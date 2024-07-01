@@ -164,12 +164,12 @@ public class AccompanyingPersonRepository {
                 }
             }
 
-            return dataList.isEmpty() ? null : dataList;
+
         } catch (SQLException e) {
             e.printStackTrace();
 
         }
-        return null;
+        return dataList.isEmpty() ? null : dataList;
     }
 
 

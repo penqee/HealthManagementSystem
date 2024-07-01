@@ -60,15 +60,17 @@ public class AccompanyingPersonController {
 
     // 更新自己的状态
     public boolean updateSelfState() throws SQLException {
-        List<AppointmentView> dataList = selectSelfAppointment();
-        if (!dataList.isEmpty()) {
+        HashMap<String, Object> map = ThreadLocalUtil.get();
+        String ap_no = (String) map.get("ap_no");
+        List<AccompanyingPerson> apList = accompanyingPersonService.select(new AccompanyingPerson(ap_no,null,null,null,null,null));
+
+        AccompanyingPerson ap = apList.get(0);
+
+        List<AppointmentView> dataList = appointmentViewService.select(new User(null,null,null,null),ap,null,"正在进行");
+
+        if (dataList != null && !dataList.isEmpty()) {
             return false;
         } else {
-            HashMap<String, Object> map = ThreadLocalUtil.get();
-            String ap_no = (String) map.get("ap_no");
-            List<AccompanyingPerson> apList = accompanyingPersonService.select(new AccompanyingPerson(ap_no,null,null,null,null,null));
-
-            AccompanyingPerson ap = apList.get(0);
             if ("忙碌".equals(ap.getAp_state())) {
                 ap.setAp_state("空闲");
             } else if ("空闲".equals(ap.getAp_state())) {
