@@ -31,5 +31,5 @@ public class AccompanyingPersonService {
         return accompanyingPersonRepository.select(ap);
     }
 
-    
+
 }

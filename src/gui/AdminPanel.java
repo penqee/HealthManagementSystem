@@ -211,7 +211,8 @@ public class AdminPanel extends JPanel {
                         String userName = newUserNameField.getText();
                         String userPhone = newUserPhoneField.getText();
 
-                        if (adminController.insertUser(userPassword,userName,userPhone)) {
+                        if (adminController.checkMessage(userPassword,userName,userPhone) && adminController.insertUser(userPassword,userName,userPhone)) {
+
                             JOptionPane.showMessageDialog(addFrame,"添加成功");
                         } else {
                             JOptionPane.showMessageDialog(addFrame,"添加失败");
@@ -310,7 +311,8 @@ public class AdminPanel extends JPanel {
                             String userPassword = updateUserPasswordField.getText();
                             String userName = updateUserNameField.getText();
                             String userPhone = updateUserPhoneField.getText();
-                            if (adminController.updateUserByNo(userNo, userPassword,userName,userPhone)) {
+                            if (adminController.checkMessage(userPassword,userName,userPhone) && adminController.updateUserByNo(userNo, userPassword,userName,userPhone)) {
+
                                 JOptionPane.showMessageDialog(updateFrame,"更新成功");
                             } else {
                                 JOptionPane.showMessageDialog(updateFrame,"更新失败");
@@ -603,7 +605,8 @@ public class AdminPanel extends JPanel {
                         String apType = (String) newAPServiceTypeComboBox.getSelectedItem();
                         String apState = (String) newAPStatesComboBox.getSelectedItem();
 
-                        if (adminController.insertAP(apPassword,apName,apPhone,apType,apState)) {
+                        if (adminController.checkMessage(apPassword,apName,apPhone)&&adminController.insertAP(apPassword,apName,apPhone,apType,apState)) {
+
                             JOptionPane.showMessageDialog(addFrame,"添加成功");
                         } else {
                             JOptionPane.showMessageDialog(addFrame,"添加失败");
@@ -730,7 +733,7 @@ public class AdminPanel extends JPanel {
                             String apType = (String) updateAPServiceTypeComboBox.getSelectedItem();
                             String apState = (String) updateAPStatesComboBox.getSelectedItem();
 
-                            if (adminController.updateAPByNo(apNo,apPassword,apName,apPhone,apType,apState) ) {
+                            if (adminController.checkMessage(apPassword,apName,apPhone) && adminController.updateAPByNo(apNo,apPassword,apName,apPhone,apType,apState) ) {
                                 JOptionPane.showMessageDialog(updateFrame,"更新成功");
                             } else {
                                 JOptionPane.showMessageDialog(updateFrame,"更新失败");

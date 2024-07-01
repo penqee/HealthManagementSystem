@@ -86,7 +86,6 @@ public class UserRepository {
     public List<User> select(User user) { //根据user中的信息进行查询
         List<User> dataList = new ArrayList<>();
 
-
         StringBuilder sql = new StringBuilder("SELECT * FROM user WHERE 1=1");
 
         // 根据用户信息构建查询条件
@@ -102,7 +101,6 @@ public class UserRepository {
         if (user.getUser_phone_number() != null && !user.getUser_phone_number().isEmpty()) {
             sql.append(" AND user_phone_number = ?");
         }
-
 
         try (Connection conn = DBUtil.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
             int index = 1;
@@ -134,8 +132,6 @@ public class UserRepository {
                     dataList.add(fetchedUser);
                 }
             }
-
-
 
         } catch (SQLException e) {
             e.printStackTrace();

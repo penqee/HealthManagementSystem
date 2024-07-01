@@ -196,4 +196,12 @@ public class AdminController {
        User user = new User(user_no,null,user_name,user_phone);
        return applicationViewService.select(user,ap_type,application_no,application_state);
     }
+
+    public boolean checkMessage(String user_password, String user_name, String user_phone_number) { //检查信息是否合法
+
+        return user_password != null && user_password.length() <= 15 && user_name != null && user_name.length() <= 15
+                && user_phone_number != null && user_phone_number.length() == 11;
+
+    }
+
 }

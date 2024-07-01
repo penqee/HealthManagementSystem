@@ -208,11 +208,13 @@ public class UserLogin extends JPanel {
                         if (userController.checkMessage(user_password,user_name,user_phone)) {
                             User user = userController.registerUser(user_password,user_name,user_phone);
 
-                            JOptionPane.showMessageDialog(registerFrame, "注册成功成功\n" +
+                            JOptionPane.showMessageDialog(registerFrame, "注册成功\n" +
                                     "账号:" + user.getUser_no() + "\n" +
                                     "密码:" + user.getUser_Password() + "\n" +
                                     "姓名:" + user.getUser_name() + "\n" +
                                     "手机号:" + user.getUser_phone_number() + "\n");
+                        } else {
+                            JOptionPane.showMessageDialog(registerFrame, "注册失败，输入信息不合规\n" );
                         }
 
                         // 示例打印注册信息，可以替换为实际的注册逻辑
